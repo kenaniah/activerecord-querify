@@ -1,6 +1,6 @@
 # Querify
 
-[![Gem Version](https://badge.fury.io/rb/querify.svg)](https://badge.fury.io/rb/querify) [![Build Status](https://circleci.com/gh/spidrtech/querify.svg?style=shield&circle-token=84665c6b0000f220b541376274d2b2b90efa725d)](https://circleci.com/gh/spidrtech/querify) [![Dependency Status](https://gemnasium.com/spidrtech/querify.svg)](https://gemnasium.com/spidrtech/querify) [![Code Climate](https://codeclimate.com/github/spidrtech/querify/badges/gpa.svg)](https://codeclimate.com/github/spidrtech/querify)
+[![Gem Version](https://badge.fury.io/rb/querify.svg)](https://badge.fury.io/rb/querify) [![Build Status](https://circleci.com/gh/spidrtech/querify.svg?style=shield&circle-token=6f2bd9feb73540b3f8cbbbc57e5ea0156a5625bc)](https://circleci.com/gh/spidrtech/querify) [![Dependency Status](https://gemnasium.com/spidrtech/querify.svg)](https://gemnasium.com/spidrtech/querify) [![Code Climate](https://codeclimate.com/github/spidrtech/querify/badges/gpa.svg)](https://codeclimate.com/github/spidrtech/querify)
 
 ## Description
 

@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = "Extends Active Record to accept parameter hashes as query predicates"
   s.license     = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 4.2.5.1"
