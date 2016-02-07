@@ -28,22 +28,22 @@ module Querify
 				options[:max_per_page] = 100 if options[:max_per_page].to_i < 1
 			end
 
-			# Determine the current page
+			# Determine the current page (options overrides params)
 			current_page = 1
-			if defined? $params[:page]
-				current_page = $params[:page].to_i if $params[:page].to_i > 0 rescue current_page
+			if defined? Querify.params[:page]
+				current_page = Querify.params[:page].to_i if Querify.params[:page].to_i > 0 rescue current_page
 			end
 			if options.has_key? :page
 				current_page = options[:page].to_i if options[:page].to_i > 0 rescue current_page
 			end
 
-			# Determine results per page
+			# Determine # of results per page (params overrides options)
 			per_page = 0
 			if options.has_key? :per_page
 				per_page = options[:per_page].to_i rescue per_page
 			end
-			if defined? $params[:per_page]
-				per_page = $params[:per_page].to_i rescue per_page
+			if defined? Querify.params[:per_page]
+				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
 
 			# Skip if there is no need to paginate
@@ -58,7 +58,7 @@ module Querify
 				$response.headers["X-Current-Page"] = current_page
 
 				# Also set pagination statistic headers when requested
-				if $params[:page_stats] == "1"
+				if Querify.params[:page_stats] == "1"
 					total = self.size
 					$response.headers['X-Total-Pages'] = (total.to_f / per_page).ceil
 					$response.headers['X-Total-Results'] = total

@@ -8,18 +8,24 @@ module Querify
 
 	extend ActiveSupport::Concern
 
+	class << self
+		
+		attr_accessor :params
+
+		def config
+			@@config ||= Config.new
+		end
+
+		def configure
+			yield self.config
+		end
+
+	end
+
 	class Config
 		attr_accessor :per_page
 		attr_accessor :min_per_page
 		attr_accessor :max_per_page
-	end
-
-	def self.config
-		@@config ||= Config.new
-	end
-
-	def self.configure
-		yield self.config
 	end
 
 	def querify options = {}
