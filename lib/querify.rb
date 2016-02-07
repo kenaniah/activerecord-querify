@@ -1,0 +1,2 @@
+module Querify
+end
