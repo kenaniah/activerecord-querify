@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    querify (0.0.1)
-      rails (~> 4.2.5.1)
+    querify (0.0.0)
+      rails (~> 4.2)
 
 GEM
   remote: https://rubygems.org/

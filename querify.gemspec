@@ -7,17 +7,18 @@ require "querify/version"
 Gem::Specification.new do |s|
   s.name        = "querify"
   s.version     = Querify::VERSION
+  s.date        = '2016-02-06'
   s.authors     = ["Kenaniah Cerny"]
   s.email       = ["kenaniah@spidrtech.com"]
-  s.homepage    = 'http://rubygems.org/gems/activerecord-querify'
+  s.homepage    = 'http://rubygems.org/gems/querify'
   s.summary     = "Query string filters for Active Record queries"
   s.description = "Extends Active Record to accept parameter hashes as query predicates"
   s.license     = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile"]
+  s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency "rails", "~> 4.2.5.1"
+  s.add_dependency "rails", "~> 4.2"
 
   s.add_development_dependency "sqlite3"
 end
