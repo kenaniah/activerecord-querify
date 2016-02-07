@@ -1,8 +1,8 @@
 require 'active_support/concern'
-#require 'querify/version'
+
 #require 'querify/condition'
-#require 'querify/paginate'
-#require 'querify/railtie' if defined? ::Rails::Railtie
+require 'querify/paginate'
+require 'querify/railtie' if defined? ::Rails::Railtie
 
 module Querify
 

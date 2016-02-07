@@ -8,11 +8,17 @@ module Querify
 		def paginate options = {}
 
 			# Determine config options
-			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 20
-			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 20
-			options[:max_per_page] = options.fetch(:max_per_page).to_i rescue Querify.config.max_per_page || 100
+			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page
+			options[:per_page] = 20 if options[:per_page].to_i < 1
 
-			puts "options: #{options}"
+			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page
+			options[:min_per_page] = 20 if options[:min_per_page].to_i < 1
+
+			options[:max_per_page] = nil if options[:max_per_page] == 0
+			unless options.has_key?(:max_per_page) && options[:max_per_page].nil?
+				options[:max_per_page] = options.fetch(:max_per_page).to_i rescue Querify.config.max_per_page
+				options[:max_per_page] = 100 if options[:max_per_page].to_i < 1
+			end
 
 			# Determine the current page
 			current_page = 1
@@ -46,5 +52,10 @@ module Querify
 		end
 
 	end
+
+	# Mix into ActiveRecord
+	::ActiveRecord::Base.extend Paginate
+	klasses = [::ActiveRecord::Relation, ::ActiveRecord::Associations::CollectionProxy]
+	klasses.each { |klass| klass.send(:include, Paginate)}
 
 end
