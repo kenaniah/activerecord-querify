@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    querify (0.0.1)
+    querify (0.0.3)
+      chronic
       rails (~> 4.2)
 
 GEM
@@ -44,6 +45,7 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.3)
     builder (3.2.2)
+    chronic (0.10.2)
     concurrent-ruby (1.0.0)
     erubis (2.7.0)
     globalid (0.3.6)
