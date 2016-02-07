@@ -2,6 +2,7 @@ require 'active_support/concern'
 
 #require 'querify/condition'
 require 'querify/paginate'
+require 'querify/sortable'
 require 'querify/middleware'
 require 'querify/railtie' if defined? ::Rails::Railtie
 
