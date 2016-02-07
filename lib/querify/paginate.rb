@@ -38,10 +38,7 @@ module Querify
 			end
 
 			# Determine # of results per page (params overrides options)
-			per_page = 0
-			if options.has_key? :per_page
-				per_page = options[:per_page].to_i rescue per_page
-			end
+			per_page = options[:per_page].to_i rescue 0
 			if defined? Querify.params[:per_page]
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end

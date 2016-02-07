@@ -16,7 +16,7 @@ class Querify::Railtie < Rails::Railtie
 
 		event = ActiveSupport::Notifications::Event.new *args
 
-		Querify.params = event.payload[:params]
+		Querify.params = event.payload[:params].symbolize_keys
 		puts "params #{event.payload}"
 
 	end
