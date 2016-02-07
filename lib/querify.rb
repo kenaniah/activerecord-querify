@@ -2,6 +2,7 @@ require 'active_support/concern'
 
 #require 'querify/condition'
 require 'querify/paginate'
+require 'querify/middleware'
 require 'querify/railtie' if defined? ::Rails::Railtie
 
 module Querify
@@ -9,8 +10,9 @@ module Querify
 	extend ActiveSupport::Concern
 
 	class << self
-		
+
 		attr_accessor :params
+		attr_accessor :headers
 
 		def config
 			@@config ||= Config.new
@@ -33,6 +35,8 @@ module Querify
 	end
 
 end
+Querify.headers ||= {}
+Querify.params ||= {}
 
 # Mix into ActiveRecord
 ::ActiveRecord::Base.extend Querify

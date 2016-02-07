@@ -18,6 +18,9 @@ module Querify
 		# - :max_per_page The maximum number of results per page, may be nil for unlimited
 		def paginate options = {}
 
+			# Reset the headers array
+			Querify.headers = {}
+
 			# Determine config options
 			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 20
 			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 20
@@ -50,16 +53,15 @@ module Querify
 			per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
 			per_page = [per_page, options[:min_per_page]].max
 
-			if defined? $response
-				$response.headers["X-Per-Page"] = per_page
-				$response.headers["X-Current-Page"] = current_page
 
-				# Also set pagination statistic headers when requested
-				if Querify.params[:page_stats] == "1"
-					total = self.size
-					$response.headers['X-Total-Pages'] = (total.to_f / per_page).ceil
-					$response.headers['X-Total-Results'] = total
-				end
+			Querify.headers["X-Per-Page"] = per_page
+			Querify.headers["X-Current-Page"] = current_page
+
+			# Also set pagination statistic headers when requested
+			if Querify.params[:page_stats] == "1"
+				total = self.size
+				Querify.headers['X-Total-Pages'] = (total.to_f / per_page).ceil
+				Querify.headers['X-Total-Results'] = total
 			end
 
 			# Perform limits

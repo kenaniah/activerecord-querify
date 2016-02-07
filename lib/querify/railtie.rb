@@ -12,6 +12,10 @@ class Querify::Railtie < Rails::Railtie
 		end
 	end
 
+	initializer "querify.middleware" do
+		Rails.application.config.middleware.use Querify::Middleware
+	end
+
 	ActiveSupport::Notifications.subscribe "start_processing.action_controller" do |*args|
 
 		event = ActiveSupport::Notifications::Event.new *args
