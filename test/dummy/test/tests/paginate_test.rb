@@ -2,6 +2,12 @@ require 'test_helper'
 
 describe Querify::Paginate do
 
+	before do
+		FactoryGirl.create(:post)
+		FactoryGirl.create(:comment)
+	end
+
+
 	it 'has access to the test dummy model' do
 		assert Post
 	end
