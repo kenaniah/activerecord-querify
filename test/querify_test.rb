@@ -1,7 +1,5 @@
 require 'test_helper'
 
-require 'querify'
-
 describe Querify do
 
     # Reset the config before each "it" spec test
