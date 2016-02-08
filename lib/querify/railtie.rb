@@ -18,7 +18,7 @@ class Querify::Railtie < Rails::Railtie
 
 	ActiveSupport::Notifications.subscribe "start_processing.action_controller" do |*args|
 
-		event = ActiveSupport::Notifications::Event.new *args
+		event = ActiveSupport::Notifications::Event.new(*args)
 
 		Querify.params = event.payload[:params].symbolize_keys
 		puts "params #{event.payload}"

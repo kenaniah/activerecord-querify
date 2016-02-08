@@ -30,10 +30,6 @@ module Querify
 		attr_accessor :max_per_page
 	end
 
-	def querify options = {}
-		self
-	end
-
 end
 Querify.headers ||= {}
 Querify.params ||= {}
