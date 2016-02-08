@@ -3,7 +3,6 @@ PATH
   specs:
     querify (0.2.0)
       chronic
-      factory_girl_rails
       rails (~> 4.2)
 
 GEM
