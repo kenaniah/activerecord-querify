@@ -18,6 +18,10 @@ module Querify
 			@@config ||= Config.new
 		end
 
+		def reset_config
+			@@config = Config.new
+		end
+
 		def configure
 			yield self.config
 		end
