@@ -37,14 +37,14 @@ module Querify
 			per_page = [per_page, options[:min_per_page]].max
 
 			# Set the pagination meta headers to be returned with the HTTP response
-			Querify.headers["X-Per-Page"] = per_page
-			Querify.headers["X-Current-Page"] = current_page
+			Querify.headers["X-Per-Page"] = per_page.to_s
+			Querify.headers["X-Current-Page"] = current_page.to_s
 
 			# Also set pagination counted headers when requested
 			if ["1", "yes", "true", "on"].include? Querify.params[:page_total_stats]
 				total = self.size
-				Querify.headers['X-Total-Pages'] = (total.to_f / per_page).ceil
-				Querify.headers['X-Total-Results'] = total
+				Querify.headers['X-Total-Pages'] = (total.to_f / per_page).ceil.to_s
+				Querify.headers['X-Total-Results'] = total.to_s
 			end
 
 			# Paginate the query
