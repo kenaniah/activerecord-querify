@@ -7,8 +7,8 @@
 Querify provides an easy interface for manipulating Active Record queries given a hash of parameters. It extends Active Record classes to provide:
 
  * `#querify` - where clauses based on a hash of parameters
- * `#paginate` - automatic and highly configurable pagination
- * `#sortable` - order by clauses based on a hash of parameters
+ * [`#paginate`](#automatic-pagination) - automatic and highly configurable pagination
+ * [`#sortable`](#automatic-sorting) - order by clauses based on a hash of parameters
 
 Querify was designed to by query string friendly, and making pagination, sorting, and filtering based on URL parameters trivial.
 
@@ -20,7 +20,7 @@ In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
 gem 'querify'
 ```
 
-## Simple Pagination
+## Automatic Pagination
 
 Easily paginate the results of an Active Record query from the parameters hash. Just call `#paginate` anywhere inside of your query:
 
@@ -130,16 +130,48 @@ c = Post.all.paginated(max_per_page: nil)
 c.paginated? #=> false when :per_page == 0, true otherwise
 ```
 
-## About Sorting
+## Automatic Sorting
 
-Querify also takes sort and order options from the parameters hash. For example:
+Sorts your Active Record query from the parameters hash. Just call `#sortable` anywhere inside of your query:
 
 ```ruby
-www.example.com/results?sort=user_id,email?order=ASC,DESC
+Post.sortable
+Post.where(author_id: 1).sortable
+Post.first.comments.sortable.order(id: :desc) # always a good idea to have a default sort
 ```
 
-This query will return results sorted first by ascending user_id and then by descending email.
+Given the url:
 
+```ruby
+www.example.com/results?sort[authors.name]=desc&sort[id]=desc
+```
+
+The query would be sorted by `"authors.name" DESC, "id" DESC`. 
+
+Sortable expects the parameter hash in the format:
+
+```
+sort[<column_name>]=<direction>
+```
+
+**Warning:** We make no guarantee that the columns sorted by are actually columns of the query. You may need to catch invalid statement exceptions when using this method.
+
+### Accepted directions
+
+ * `asc` - ASC
+ * `desc` - DESC
+ * `:asc` - ASC
+ * `:desc` - DESC
+ * `:ascnf` - ASC NULLS FIRST
+ * `:ascnl` - ASC NULLS LAST
+ * `:descnf` - DESC NULLS FIRST
+ * `:descnl` - DESC NULLS LAST
+
+### `Querify::InvalidDirection`
+
+When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown. When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
+
+To force this exception to bubble up, use the `#sortable!` method instead.
 
 ## Configuration Options
 
