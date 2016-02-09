@@ -34,7 +34,7 @@ module Querify
 			empty: ''
 		}.freeze
 
-		def initialize column, value, operator = '=', options = {}
+		def initialize column, operator, value, options = {}
 
 			self.options = options.is_a?(Hash) ? options : {}
 			self.column = column
@@ -95,13 +95,13 @@ module Querify
 		end
 
 		# Returns the predicate as a hash
-		def to_hash use_raw_value = false
+		def to_hash use_raw_value = true
 			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
 		end
 
 		# Returns predicate as an escaped query string param
 		def to_query key="where"
-			to_hash(true).to_query key
+			to_hash(false).to_query key
 		end
 
 		# Returns predicate as an unescaped query string param
