@@ -101,7 +101,7 @@ module Querify
 
 		# Returns predicate as an escaped query string param
 		def to_query key="where"
-			to_hash(false).to_query key
+			to_hash.to_query key
 		end
 
 		# Returns predicate as an unescaped query string param
