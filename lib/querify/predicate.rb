@@ -94,16 +94,17 @@ module Querify
 			@options
 		end
 
+		# Returns the predicate as a hash
 		def to_hash use_raw_value = false
 			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
 		end
 
-		# Returns an escaped query string param
+		# Returns predicate as an escaped query string param
 		def to_query key="where"
 			to_hash(true).to_query key
 		end
 
-		# Returns an unescaped query string param
+		# Returns predicate as an unescaped query string param
 		def to_s
 			URI.unescape to_query
 		end
