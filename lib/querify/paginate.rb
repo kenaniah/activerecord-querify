@@ -1,3 +1,4 @@
+require 'pry'
 module Querify
 	module Paginate
 
