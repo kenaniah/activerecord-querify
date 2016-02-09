@@ -42,7 +42,7 @@ To access a particular page of results, pass the `:page` parameter in your URL:
 www.example.com/posts?page=5&per_page=10
 ```
 
-If omitted, `:page` is defaulted 1, and `:per_page` is defaulted to 20.
+If omitted, `:page` is defaulted to 1, and `:per_page` is defaulted to 20.
 
 ### Pagination Header Metadata
 
@@ -124,7 +124,10 @@ a = Post.all
 a.paginated? #=> false
 
 b = Post.all.paginated
-b.paginated? #=> true (unless :per_page == 0 and :max_per_page == nil)
+b.paginated? #=> true
+
+c = Post.all.paginated(max_per_page: nil)
+c.paginated? #=> false when :per_page == 0, true otherwise
 ```
 
 ## About Sorting
