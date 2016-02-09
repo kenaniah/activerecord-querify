@@ -31,7 +31,7 @@ module Querify
 			if DIRECTIONS.values.include? dir.to_s.upcase
 				@direction = dir.to_s.upcase
 			else
-				@direction = DIRECTIONS[dir.to_sym]
+				@direction = DIRECTIONS[symbolize dir]
 			end
 
 			raise(InvalidDirection, "'#{dir}' is not a valid direction") unless @direction
@@ -73,8 +73,15 @@ module Querify
 		end
 
 		# Returns the SQL needed to populate an ORDER BY clause
-		def to_a
-			["#{quoted_column} #{@direction}"]
+		def to_sql
+			"#{quoted_column} #{@direction}"
+		end
+
+	protected
+
+		def symbolize val
+			return val if val.is_a? Symbol
+			val[1..-1].to_sym
 		end
 
 	end
