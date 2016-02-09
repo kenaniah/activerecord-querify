@@ -1,32 +1,31 @@
 module Querify
 	module Sortable
 
-		def sortable
+		# Sorts the query, throwing InvalidDirection exceptions
+		def sortable!
+			sortable true
+		end
+
+		# Sorts the query, silently ignoring InvalidDirection exceptions
+		def sortable throw_errors = false
 
 			query = self
 
-			# Sort the query based :sort and :order from query string
+			# Sort the query based :sort from query string
 			if Querify.params[:sort]
 
-				sort = Querify.params[:sort]
-				sort = sort.to_s.split(",") unless sort.class == Array
-
-				order = Querify.params[:order] || []
-				order = order.to_s.split(",") unless order.class == Array
-
-				# Apply the sorts
-				sort.each_with_index do |col, i|
-
-					col = Integer(col) rescue ActiveRecord::Base.connection.quote_column_name(col)
-					direction = order[i].to_s.downcase == "desc" ? "DESC" : "ASC"
-
-					query = query.order "#{col} #{direction}"
-
+				Querify.params[:sort].each do |column, direction|
+					begin
+						query = query.order Querify::Sort.new(column, direction).to_sql
+					rescue Querify::InvalidDirection => err
+						raise err if throw_errors
+					end
 				end
 
 			end
 
-			query
+			# Return the (potentially) sorted query
+			return query
 
 		end
 
