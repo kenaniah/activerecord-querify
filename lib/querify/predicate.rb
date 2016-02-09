@@ -1,7 +1,7 @@
-module Operator
+module Querify
 
 	# Thrown when an invalid operator is given
-	class InvalidOperator < Error; end
+	class InvalidOperator < StandardError; end
 
 	# Represents an individual predicate to be added to a where clause
 	class Predicate
@@ -23,7 +23,7 @@ module Operator
 			notin: 'NOT IN'
 		}.freeze
 
-		INVERTED_OPERATORS = OPERATORS.dup.freeze
+		INVERTED_OPERATORS = OPERATORS.dup.invert.freeze
 
 		VALUES = {
 			true: true,
@@ -61,6 +61,11 @@ module Operator
 			@column = col.to_s
 		end
 
+		# Returns a safely quoted version of the column
+		def quoted_column
+			ActiveRecord::Base.connection.quote_column_name @column
+		end
+
 		def value= val
 			@value = val
 		end
@@ -74,19 +79,25 @@ module Operator
 		end
 
 		def to_hash
-			{column => {INVERTED_OPERATORS[@operator] => value}}
+			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => value}}
 		end
 
+		# Returns an escaped query string param
+		def to_query key="where"
+			to_hash.to_query key
+		end
+
+		# Returns an unescaped query string param
+		def to_s
+			URI.unescape to_query
+		end
+
+		# Returns the SQL and parameter needed to populate a WHERE clause
 		def to_a
-			["#{column} #{@operator} #{placeholder}", value]
+			["#{quoted_column} #{@operator} #{placeholder}", value]
 		end
 
 	protected
-
-		# Returns a safely quoted version of the column
-		def column
-			ActiveRecord::Base.connection.quote_column_name @column
-		end
 
 		# Returns the parameter used to bind the value
 		def placeholder
@@ -113,10 +124,10 @@ module Operator
 			return Chronic.parse @value.to_s if @options[:chronic]
 
 			# Return a list from delimited input
-			return @value.split(@options[:delimiter] || ',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a? Array
+			return @value.split(@options[:delimiter] || ',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a?(Array)
 
 			# Return a convertable value
-			return VALUES[@value[1..-1].to_sym] if value =~ /^\:/ && VALUES.has_key? @value[1..-1].to_sym
+			return VALUES[@value[1..-1].to_sym] if @value =~ /^\:/ && VALUES.has_key?(@value[1..-1].to_sym)
 
 			# Return the value
 			return @value
