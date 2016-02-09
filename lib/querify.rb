@@ -1,7 +1,15 @@
 require 'active_support/concern'
 
+# Pagination module
 require 'querify/paginate'
+
+# Sorting module
 require 'querify/sortable'
+
+# Hash predicates module
+require 'querify/predicate'
+
+# Rails integration
 require 'querify/middleware'
 require 'querify/railtie' if defined? ::Rails::Railtie
 
