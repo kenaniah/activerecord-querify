@@ -11,7 +11,7 @@ module Querify
 
 			query = self
 
-			# Sort the query based :sort from query string
+			# Sort the query based on :sort from query string
 			if Querify.params[:sort]
 
 				Querify.params[:sort].each do |column, direction|
