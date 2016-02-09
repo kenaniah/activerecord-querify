@@ -49,7 +49,7 @@ If omitted, `:page` is defaulted 1, and `:per_page` is defaulted to 20.
 Whenever pagination is used, Querify adds headers for communicating pagination metadata to the client:
 
 ```
-X-Current-Page: 10
+X-Current-Page: 5
 X-Per-Page: 10
 ```
 
