@@ -1,3 +1,5 @@
+require 'chronic'
+
 module Querify
 
 	# Thrown when an invalid operator is given
@@ -5,8 +7,6 @@ module Querify
 
 	# Represents an individual predicate to be added to a where clause
 	class Predicate
-
-		attr_reader :operator, :column
 
 		OPERATORS = {
 			lt: '<',
@@ -57,8 +57,16 @@ module Querify
 
 		end
 
+		def operator
+			@operator
+		end
+
 		def column= col
 			@column = col.to_s
+		end
+
+		def column
+			@column
 		end
 
 		# Returns a safely quoted version of the column
@@ -74,17 +82,25 @@ module Querify
 			parse_value @value
 		end
 
+		def raw_value
+			@value
+		end
+
 		def options= opts
 			@options = opts.symbolize_keys
 		end
 
-		def to_hash
-			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => value}}
+		def options
+			@options
+		end
+
+		def to_hash use_raw_value = false
+			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
 		end
 
 		# Returns an escaped query string param
 		def to_query key="where"
-			to_hash.to_query key
+			to_hash(true).to_query key
 		end
 
 		# Returns an unescaped query string param
@@ -121,7 +137,7 @@ module Querify
 			return @value.to_f if @options[:float]
 
 			# Return a time
-			return Chronic.parse @value.to_s if @options[:chronic]
+			return ::Chronic.parse @value.to_s if @options[:chronic]
 
 			# Return a list from delimited input
 			return @value.split(@options[:delimiter] || ',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a?(Array)
