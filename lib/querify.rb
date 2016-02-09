@@ -4,6 +4,7 @@ require 'active_support/concern'
 require 'querify/paginate'
 
 # Sorting module
+require 'querify/sort'
 require 'querify/sortable'
 
 # Hash predicates module
