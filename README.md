@@ -10,7 +10,7 @@ Querify provides an easy interface for manipulating Active Record queries given 
 |----------------------|---------|
 | [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination |
 | [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters |
-| `#sortable!` | like `#sortable`, but throws exceptions when invalid sorting directions are passed |
+| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions when invalid sorting directions are passed |
 | `#querify` | where clauses based on a hash of parameters |
 
 Querify was designed to by query string friendly, and making pagination, sorting, and filtering based on URL parameters trivial.
