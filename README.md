@@ -4,7 +4,12 @@
 
 ## Overview
 
-Querify provides an easy interface for querying ActiveRecord data given a hash of parameters. It also allows you to specify configuration options to set limits to paginated requests.
+Querify provides an easy interface for manipulating Active Record queries given a hash of parameters. It extends Active Record classes to provide:
+ * `#querify` - where clauses based on a hash of parameters
+ * `#paginate` - automatic and highly configurable pagination
+ * `#sortable` - order by clauses based on a hash of parameters
+
+Querify was designed to by query string friendly, and making pagination, sorting, and filtering based on URL parameters trivial.
 
 ## Getting Started
 
@@ -14,26 +19,49 @@ In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
 gem 'querify'
 ```
 
-## About Pagination
+## Simple Pagination
 
-Easily paginate the results of an ActiveRecord query from the parameters hash. A simple query string would look like:
-
-```ruby
-www.example.com/results?per_page=20
-```
-
-To access a particular page of results, pass in the page parameter.
+Easily paginate the results of an Active Record query from the parameters hash. Just call `#paginate` anywhere inside of your query:
 
 ```ruby
-www.example.com/results?per_page=20?page=10
+Post.paginate
+Post.where(author_id: 1).paginate
+Post.first.comments.paginate
 ```
 
-Also, return a HTTP header with page stats by adding the following parameter to the query string:
+Querify will then pickup `:page` and `:per_page` from the request's params hash to automatically control which page is returned & the number of results to return.
+
+To access a particular page of results, pass the `:page` parameter in your URL:
+
 ```ruby
-page_stats=1
+www.example.com/posts?page=5&per_page=10
 ```
 
-This will return the current page and the total number of pages.
+If omitted, `:page` is defaulted 1, and `:per_page` is defaulted to 20.
+
+### Pagination Headers Returned
+
+Whenever pagination is used, Querify adds headers for communicating pagination metadata to the client:
+
+```
+X-Current-Page: 10
+X-Per-Page: 10
+```
+
+Recordset totals can be requested by additionally passing the `:page_total_stats` param in the URL:
+
+```ruby
+www.example.com/posts?page=4&page_total_stats=1
+```
+
+Assuming that there are 291 posts total, the following headers would be returned:
+
+```
+X-Current-Page: 4
+X-Per-Page: 20
+X-Total-Pages: 15
+X-Total-Results: 291
+```
 
 ## About Sorting
 
