@@ -6,9 +6,12 @@
 
 Querify provides an easy interface for manipulating Active Record queries given a hash of parameters. It extends Active Record classes to provide:
 
- * `#querify` - where clauses based on a hash of parameters
- * `#paginate` - automatic and highly configurable pagination
- * `#sortable` - order by clauses based on a hash of parameters
+| Active Record Method | Purpose |
+|----------------------|---------|
+| [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination |
+| [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters |
+| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions when invalid sorting directions are passed |
+| `#querify` | where clauses based on a hash of parameters |
 
 Querify was designed to by query string friendly, and making pagination, sorting, and filtering based on URL parameters trivial.
 
@@ -20,7 +23,7 @@ In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
 gem 'querify'
 ```
 
-## Simple Pagination
+## Automatic Pagination
 
 Easily paginate the results of an Active Record query from the parameters hash. Just call `#paginate` anywhere inside of your query:
 
@@ -74,9 +77,11 @@ As using `:page_total_stats` runs a count query, it is recommended to add it to 
 
 To ensure that clients do not abuse the `:per_page` URL param, we provide the following configuration options for pagination:
 
- * `:per_page` - the default number of results to be returned per page (20 when not specified)
- * `:min_per_page` - the minimum number of results to be returned per page (also defaults to 20)
- * `:max_per_page` - the maximum number of results to be returned per page (defaults to 100)
+| Config Option | Default Value | Description |
+|---------------|---------|-------------|
+| `:per_page` | 20 | the default number of results to be returned per page |
+| `:min_per_page` | 20 | the minimum number of results to be returned per page |
+| `:max_per_page` | 100 | the maximum number of results to be returned per page |
 
 These may be set in a config block:
 
@@ -96,15 +101,15 @@ Rails.application.config.querify.min_per_page = 5
 Rails.application.config.querify.max_per_page = 50
 ```
 
-#### `config.per_page`
+##### `config.per_page`
 
 This option sets the default number of results to be returned in the event that `:per_page` is not specified in the URL
 
-#### `config.min_per_page`
+##### `config.min_per_page`
 
 It is usually a good idea to constrian the number of results to be returned per page. This option ensures that the `:per_page` param is adjusted to meet this minimum. Setting this to `0` effectively disables the minimum. 
 
-#### `config.max_per_page`
+##### `config.max_per_page`
 
 Determines the maximum number of results that can be requested per page. This option ensures that the `:per_page` param is adjusted to meet this maximum. Setting this to `nil` effectively disables the maximum.
 
@@ -130,48 +135,51 @@ c = Post.all.paginated(max_per_page: nil)
 c.paginated? #=> false when :per_page == 0, true otherwise
 ```
 
-## About Sorting
+## Automatic Sorting
 
-Querify also takes sort and order options from the parameters hash. For example:
-
-```ruby
-www.example.com/results?sort=user_id,email?order=ASC,DESC
-```
-
-This query will return results sorted first by ascending user_id and then by descending email.
-
-
-## Configuration Options
-
-You can configure several options in the query string to regulate the number of results returned per page.
+Sorts your Active Record query from the parameters hash. Just call `#sortable` anywhere inside of your query:
 
 ```ruby
-# In config/initializers/querify.rb:
-Querify.configure do |config|
-    config.per_page = 25
-    config.min_per_page = 10
-    config.max_per_page = 50
-end
+Post.sortable
+Post.where(author_id: 1).sortable
+Post.first.comments.sortable.order(id: :desc) # always a good idea to have a default sort
 ```
 
-To prevent overly large queries from being returned, the max_per_page option is only accessible to the website administrator. The per_page parameter cannot override the max_per_page config option.
-
-
-## Examples
-
-Add the paginate method to your controller to enforce pagination.
+Given the url:
 
 ```ruby
-class UsersController
+www.example.com/results?sort[authors.name]=desc&sort[id]=desc
+```
 
-	def index
-			render json:
-				@user
-					.posts
-						.paginate
-						.sortable
-						.includes(:tags, :user)
-	end
-end
+The query would be sorted by `"authors.name" DESC, "id" DESC`. 
+
+Sortable expects the parameter hash in the format:
 
 ```
+sort[<column_name>]=<direction>
+```
+
+**Warning:** We make no guarantee that the columns sorted by are actually columns of the query. You may need to catch invalid statement exceptions when using this method.
+
+### Accepted Sort Directions
+
+| Param Value | Sort Direction |
+|-------------|----------|
+| `asc` | ASC |
+| `desc` | DESC |
+| `:asc` | ASC |
+| `:desc` | DESC |
+| `:ascnf` | ASC NULLS FIRST |
+| `:ascnl` | ASC NULLS LAST |
+| `:descnf` | DESC NULLS FIRST |
+| `:descnl` | DESC NULLS LAST |
+
+#### `Querify::InvalidDirection`
+
+When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown. When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
+
+To force this exception to bubble up, use the `#sortable!` method instead.
+
+## Bugs?
+
+If you find a bug please [add an issue on GitHub](https://github.com/kenaniah/querify/issues) or fork the project and send a pull request. Feature requests are also welcome.
