@@ -180,37 +180,6 @@ When an invalid direction is passed in to a sort param, `Querify::InvalidDirecti
 
 To force this exception to bubble up, use the `#sortable!` method instead.
 
-## Configuration Options
+## Bugs?
 
-You can configure several options in the query string to regulate the number of results returned per page.
-
-```ruby
-# In config/initializers/querify.rb:
-Querify.configure do |config|
-    config.per_page = 25
-    config.min_per_page = 10
-    config.max_per_page = 50
-end
-```
-
-To prevent overly large queries from being returned, the max_per_page option is only accessible to the website administrator. The per_page parameter cannot override the max_per_page config option.
-
-
-## Examples
-
-Add the paginate method to your controller to enforce pagination.
-
-```ruby
-class UsersController
-
-	def index
-			render json:
-				@user
-					.posts
-						.paginate
-						.sortable
-						.includes(:tags, :user)
-	end
-end
-
-```
+If you find a bug please [add an issue on GitHub](https://github.com/kenaniah/querify/issues) or fork the project and send a pull request. Feature requests are also welcome.
