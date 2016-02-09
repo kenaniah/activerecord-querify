@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email       = ["kenaniah@spidrtech.com"]
   s.homepage    = 'http://rubygems.org/gems/querify'
   s.summary     = "Query string filters for Active Record queries"
-  s.description = "Extends Active Record to accept parameter hashes as query predicates"
+  s.description = "Querify provides an easy interface for manipulating Active Record queries given a hash of parameters. It extends Active Record classes to provide pagination, sorting, and filtering."
   s.license     = "MIT"
 
   s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile"]
