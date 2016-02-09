@@ -43,6 +43,37 @@ module Querify
 		attr_accessor :max_per_page
 	end
 
+	# Filters the query using :where from the params hash, throwing InvalidOperator exceptions
+	def querify!
+		querify true
+	end
+
+	# Filters the query using :where from the params hash, silently ignoring InvalidOperator exceptions
+	def querify throw_errors = false
+
+		query = self
+
+		# Filter the query based on :where from query string
+		if Querify.params[:where]
+
+			Querify.params[:where].each do |column, filters|
+				filters.each do |operator, value|
+					begin
+						predicate = Querify::Predicate.new column, operator, value
+						query = query.where(*predicate.to_a)
+					rescue Querify::InvalidOperator => err
+						raise err if throw_errors
+					end
+				end
+			end
+
+		end
+
+		# Return the (potentially) filtered query
+		return query
+
+	end
+
 end
 Querify.headers ||= {}
 Querify.params ||= {}
