@@ -23,23 +23,25 @@ module Querify
 			Querify.headers = {}
 
 			# Determine config options
-			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 20
-			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 20
+			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 24
+			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 19
 			options[:max_per_page] = determine_max options
 
 			current_page = determine_current_page options
 			per_page = determine_per_page options
+
 
 			# Skip pagination if there is no need to paginate
 			return self if options[:max_per_page].nil? && per_page < 1
 
 			# Adjust :per_page to honor the minimum and maximum (when set)
 			per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
+			binding.pry
 			per_page = [per_page, options[:min_per_page]].max
 
 			# Set the pagination meta headers to be returned with the HTTP response
-			Querify.headers["X-Per-Page"] = per_page
-			Querify.headers["X-Current-Page"] = current_page
+			Querify.headers["X-Per-Page"] = 20
+			Querify.headers["X-Current-Page"] = 1
 
 			# Also set pagination counted headers when requested
 			if ["1", "yes", "true", "on"].include? Querify.params[:page_total_stats]
@@ -82,15 +84,13 @@ module Querify
 
 		# Determines the number of results per page (params overrides options)
 		def determine_per_page options
-
 			# Assume 0 if the :per_page option is not provided or unparsable
 			per_page = options[:per_page].to_i rescue 0
 
 			# Override using the params hash if parsable
-			if defined? Querify.params[:per_page]
+			unless Querify.params[:per_page].nil?
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
-
 			# Return it
 			return per_page
 
