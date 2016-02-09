@@ -1,4 +1,3 @@
-require 'pry'
 module Querify
 	module Paginate
 
@@ -21,23 +20,23 @@ module Querify
 
 			# Reset the headers array
 			Querify.headers = {}
+			# Determine config
 
-			# Determine config options
-			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 24
-			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 19
+			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 20
+			binding.pry
+			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 20
 			options[:max_per_page] = determine_max options
 
 			current_page = determine_current_page options
 			per_page = determine_per_page options
-
 
 			# Skip pagination if there is no need to paginate
 			return self if options[:max_per_page].nil? && per_page < 1
 
 			# Adjust :per_page to honor the minimum and maximum (when set)
 			per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
-			binding.pry
 			per_page = [per_page, options[:min_per_page]].max
+
 
 			# Set the pagination meta headers to be returned with the HTTP response
 
@@ -72,13 +71,11 @@ module Querify
 
 			# Treat 0 the same as nil
 			max = nil if max == 0
-
 			# If :max_per_page is not explicitly nil, parse it
 			unless options.has_key?(:max_per_page) && max.nil?
 				max = options.fetch(:max_per_page).to_i rescue Querify.config.max_per_page
 				max = 100 if max.to_i < 1
 			end
-
 			# Return it
 			return max
 
@@ -90,7 +87,7 @@ module Querify
 			per_page = options[:per_page].to_i rescue 0
 
 			# Override using the params hash if parsable
-			unless Querify.params[:per_page].nil?
+			if defined? Querify.params[:per_page]
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
 			# Return it
