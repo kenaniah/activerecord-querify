@@ -45,23 +45,23 @@ module Querify
 	end
 
 	# Filters the query using :where from the params hash, throwing exceptions
-	def querify! allowed_columns: {}, restrict: false
-		_querify true, allowed_columns: allowed_columns, restrict: restrict
+	def querify! columns: {}, only: false
+		_querify true, columns: columns, only: only
 	end
 
 	# Filters the query using :where from the params hash, silently ignoring exceptions
-	def querify allowed_columns: {}, restrict: false
-		_querify false, allowed_columns: allowed_columns, restrict: restrict
+	def querify columns: {}, only: false
+		_querify false, columns: columns, only: only
 	end
 
-	protected def _querify throw_errors, allowed_columns: {}, restrict: false
+	protected def _querify throw_errors, columns: {}, only: false
 
 		query = self
 
 		# Prepare the list of allowed columns
-		allowed_columns = allowed_columns.stringify_keys
-		unless restrict
-			allowed_columns = _detect_columns.merge allowed_columns
+		columns = columns.stringify_keys
+		unless only
+			columns = _detect_columns.merge columns
 		end
 
 		# Filter the query based on :where from query string
@@ -76,7 +76,7 @@ module Querify
 						column = column.to_s
 
 						# Perform column security
-						unless allowed_columns.include?(column)
+						unless columns.include?(column)
 							raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
 						end
 
@@ -86,7 +86,7 @@ module Querify
 						end
 
 						# Filter the query
-						predicate = Querify::Predicate.new column, operator, value, allowed_columns[column]
+						predicate = Querify::Predicate.new column, operator, value, columns[column]
 						query = query.where(*predicate.to_a)
 
 					rescue Querify::Error => err

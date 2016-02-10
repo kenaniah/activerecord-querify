@@ -205,16 +205,16 @@ To force this exception to bubble up, use the `#sortable!` method instead.
 
 ## Column Security
 
-To ensure that clients do not pass columns that are non-existent or restricted, you can provide a hash of columns & types to whitelist by using the `allowed_columns:` hash and enabling the `restrict:` key.
+To ensure that clients do not pass columns that are non-existent or restricted, you can provide a hash of columns & types to whitelist by using the `columns:` hash and enabling the `only:` key.
 
 ```ruby
-Post.sortable allowed_columns: {id: :integer, name: :text}, restrict: true # silently ignores columns that aren't whitelisted
-Post.querify! allowed_columns: {id: :integer, name: :text}, restrict: true # throws an exception for columns that aren't whitelisted
+Post.sortable columns: {id: :integer, name: :text}, only: true # silently ignores columns that aren't whitelisted
+Post.querify! columns: {id: :integer, name: :text}, only: true # throws an exception for columns that aren't whitelisted
 ```
 
-`allowed_columns:` takes a hash where the keys represent column names and the values represent the Active Record type of the column.
+`columns:` takes a hash where the keys represent column names and the values represent the Active Record type of the column.
 
-`restrict:` causes the function to disallow any columns that aren't explicitly listed in the `allowed_columns:` hash.
+`only:` causes the function to disallow any columns that aren't explicitly listed in the `columns:` hash.
 
 ## Bugs?
 
