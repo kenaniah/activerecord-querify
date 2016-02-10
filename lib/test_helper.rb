@@ -33,3 +33,6 @@ module PaginationTestHelper
     end
 
 end
+
+module SortableTestHelper
+end

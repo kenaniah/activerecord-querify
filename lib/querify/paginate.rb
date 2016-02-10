@@ -46,7 +46,7 @@ module Querify
 
 			# Also set pagination counted headers when requested
 			if ["1", "yes", "true", "on"].include? Querify.params[:page_total_stats]
-				total = self.size
+				total = self.count
 				Querify.headers['X-Total-Pages'] = (total.to_f / per_page).ceil.to_s
 				Querify.headers['X-Total-Results'] = total.to_s
 			end

@@ -22,23 +22,5 @@ describe Querify::Sortable do
 		assert_respond_to Post.all, :sortable
 	end
 
-	it 'correctly determines if query is sortable' do
-	end
-
-	it 'sorts by column name provided' do
-	end
-
-	it 'orders by order options provided' do
-	end
-
-	it 'orders by ascending if no order option provided' do
-	end
-
-	it 'ignores sort options passed in as an array' do
-	end
-
-	it 'ignores order options passed in as an array' do
-	end
-
 
 end

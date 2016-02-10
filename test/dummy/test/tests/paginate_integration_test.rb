@@ -4,6 +4,7 @@ class PaginationTest < ActionDispatch::IntegrationTest
     include PaginationTestHelper
 
 # Group: No Query String
+
         test 'uses hardcoded default for per_page settings if no options or config given' do
             Querify.reset_config
             assert_nil Querify.config.per_page
@@ -14,7 +15,11 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
             json = JSON.parse(response.body)
 
+            # Default page length
             assert_equal 20, json.length
+
+            # Ensure we are on the first page of results
+            assert_equal 1, json.first['id']
 
     	end
 
@@ -27,6 +32,7 @@ class PaginationTest < ActionDispatch::IntegrationTest
             json = JSON.parse(response.body)
             assert_equal 20, json.length
     	end
+
 
 # Group: With Query String
 
@@ -118,21 +124,36 @@ class PaginationTest < ActionDispatch::IntegrationTest
     	end
 
 
-    	test 'sets the per_page HTTP headers' do
+    	test 'sets the page stats HTTP headers if requested' do
+            configure_querify
+
+            get '/posts?page_total_stats=1'
+
+            # assert_equal "20", response.header['X-Per-Page']
+            # assert_equal "1", response.header['X-Current-Page']
+            binding.pry
+            # TODO test total pages and total results
+
+
+        end
+
+
+        test 'does not set the per_page HTTP headers unless requested' do
             configure_querify
 
             get '/posts'
-
-            assert_equal "20", response.header['X-Per-Page']
-            assert_equal "1", response.header['X-Current-Page']
-
         end
+
 
 # Group: Complex queries
 
     test 'it returns the right result from a complex query' do
         configure_querify
-        # complex query 
+        get '/posts?per_page=33&page=2'
+
+        json = JSON.parse(response.body)
+        assert_equal 34, json.first['id']
+        assert_equal 33, json.length
 
     end
 
