@@ -23,6 +23,8 @@ module Querify
 
 		attr_accessor :params
 		attr_accessor :headers
+		attr_accessor :predicates
+		attr_accessor :sorts
 
 		def config
 			@@config ||= Config.new
@@ -58,6 +60,10 @@ module Querify
 
 		query = self
 
+		# Clear out the existing predicates array
+		Querify.predicates = []
+
+
 		# Prepare the list of allowed columns
 		columns = columns.stringify_keys
 		unless only
@@ -88,6 +94,9 @@ module Querify
 						# Filter the query
 						predicate = Querify::Predicate.new column, operator, value, columns[column]
 						query = query.where(*predicate.to_a)
+
+						# Store the predicate
+						Querify.predicates << predicate
 
 					rescue Querify::Error => err
 						raise err if throw_errors

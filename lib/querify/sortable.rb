@@ -15,6 +15,9 @@ module Querify
 
 			query = self
 
+			# Clear out the existing sorts array
+			Querify.sorts = []
+
 			# Prepare the list of allowed columns
 			columns = columns.stringify_keys
 			unless only
@@ -41,7 +44,11 @@ module Querify
 						end
 
 						# Sort the query
-						query = query.order Querify::Sort.new(column, direction).to_sql
+						sort = Querify::Sort.new(column, direction)
+						query = query.order sort.to_sql
+
+						# Add the sort to the sorts array
+						Querify.sorts << sort
 
 					rescue Querify::Error => err
 						raise err if throw_errors
