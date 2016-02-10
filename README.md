@@ -10,11 +10,11 @@ Querify provides an easy interface for manipulating Active Record queries given 
 |----------------------|---------|
 | [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination |
 | [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters |
-| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions when invalid sorting directions are passed |
 | `#querify` | where clauses based on a hash of parameters |
-| `#querify!` | like `#querify`, but throws exceptions when invalid operators are passed |
+| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions instead of silently ignoring them |
+| `#querify!` | like `#querify`, but throws exceptions instead of silently ignoring them |
 
-Querify was designed to by query string friendly, and making pagination, sorting, and filtering based on URL parameters trivial.
+Querify was designed to be query string friendly, making pagination, sorting, and filtering based on URL parameters trivial.
 
 ## Getting Started
 
@@ -23,6 +23,17 @@ In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
 ```ruby
 gem 'querify'
 ```
+
+To make a query automatically paginate, sort, and dynamically filter based on query string parameters, just add all 3 methods to a query:
+
+```ruby
+Post.find(params[:post_id]).comments.paginate.sortable.querify.order(id: :desc)
+```
+
+And then manipulate your query via URL params:
+
+```
+www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[
 
 ## Automatic Pagination
 
@@ -33,8 +44,8 @@ Post.paginate
 Post.where(author_id: 1).paginate
 Post.first.comments.paginate
 
-# Overridding options
-Post.first.comments.paginate(min_per_page: 1, max_per_page: 10, per_page: 5) 
+# Overriding options
+Post.first.comments.paginate(min_per_page: 1, max_per_page: 10, per_page: 5)
 # the above allows the client to request between 1 - 10 results per page, returning 5 results per page by default
 ```
 
@@ -108,7 +119,7 @@ This option sets the default number of results to be returned in the event that 
 
 ##### `config.min_per_page`
 
-It is usually a good idea to constrian the number of results to be returned per page. This option ensures that the `:per_page` param is adjusted to meet this minimum. Setting this to `0` effectively disables the minimum. 
+It is usually a good idea to constrian the number of results to be returned per page. This option ensures that the `:per_page` param is adjusted to meet this minimum. Setting this to `0` effectively disables the minimum.
 
 ##### `config.max_per_page`
 
@@ -152,7 +163,7 @@ Given the url:
 www.example.com/results?sort[authors.name]=desc&sort[id]=desc
 ```
 
-The query would be sorted by `"authors.name" DESC, "id" DESC`. 
+The query would be sorted by `"authors.name" DESC, "id" DESC`.
 
 Sortable expects the parameter hash in the format:
 
@@ -175,11 +186,31 @@ sort[<column_name>]=<direction>
 | `:descnf` | DESC NULLS FIRST |
 | `:descnl` | DESC NULLS LAST |
 
+### Sort Column Security
+
+To ensure that clients do not pass columns that are non-existent (therefore breaking your DB query), you can provide an array of columns to whitelist for sorting using the `allowed_columns:` key.
+
+```ruby
+Post.sortable allowed_columns: [:id, :name] # silently ignores columns that aren't whitelisted
+Post.sortable! allowed_columns: [:id, :name] # throws an exception for columns that aren't whitelisted
+```
+
 #### `Querify::InvalidDirection`
 
-When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown. When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
+When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown. 
+
+When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
 To force this exception to bubble up, use the `#sortable!` method instead.
+
+#### `Querify::InvalidSortColumn`
+
+This exception is thrown when sortable is called with a whitelist and a sort is requested for a column that is not in the whitelist. 
+
+When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
+
+To force this exception to bubble up, use the `#sortable!` method instead.
+
 
 ## Bugs?
 
