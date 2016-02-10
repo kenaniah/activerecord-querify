@@ -1,6 +1,24 @@
 require 'test_helper'
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
+    # Test in several groups
+    # 1. No query string
+    # - get according to defaults
+    # - get according to specific configs
+    # - get if only some configs set and others nil
+    # 2. Query string
+    # - get with some query string set
+    # - check whether query string overrides config
+    # 3. Options Hash
+    # - get with some options set and no query string
+    # - get with some options and query string set to see what overrides
+    # - get with config hash, options, query string...
+
+    # and check specific conditions as outlined by tests below 
+
+
+
+
 
     	test 'this is how the tests should run' do
             get '/posts?sort[name]=asc&sort[id]=desc'
@@ -18,16 +36,16 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     	end
 
-    	test 'uses config for per_page settings if no option given' do
-            Querify.config.per_page = 10
-            Querify.config.min_per_page = 5
-            Querify.config.max_per_page = 20
-
-            get '/posts'
-
-            json = JSON.parse(response.body)
-            assert_equal 10, json.length
-    	end
+    	# test 'uses config for per_page settings if no option given' do
+        #     Querify.config.per_page = 10
+        #     Querify.config.min_per_page = 5
+        #     Querify.config.max_per_page = 20
+        #
+        #     get '/posts'
+        #
+        #     json = JSON.parse(response.body)
+        #     assert_equal 10, json.length
+    	# end
 
     	test 'uses per_page settings if given' do
             get '/posts?per_page=6'
@@ -45,9 +63,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
         end
 
-    	test 'sets max_per_page to 100 if it is given a negative number from the options hash' do
+        # Should I test the hierarchy of config options?
 
-        
+    	test 'sets max_per_page to 100 if it is given a negative number from the overriding options hash' do
+            posts = Post.paginate(max_per_page: -1)
+
+            assert_equal 100, posts.length
 
     	end
 

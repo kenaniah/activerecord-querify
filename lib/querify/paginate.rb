@@ -18,6 +18,8 @@ module Querify
 		# - :max_per_page The maximum number of results per page, may be nil for unlimited
 		def paginate options = {}
 
+			binding.pry
+
 			# Reset the headers array
 			Querify.headers = {}
 			# Determine config
