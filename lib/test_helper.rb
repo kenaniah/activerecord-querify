@@ -19,3 +19,17 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActionDispatch::IntegrationTest.fixture_path = ActiveSupport::TestCase.fixture_path
   ActiveSupport::TestCase.fixtures :all
 end
+
+
+module PaginationTestHelper
+    def configure_querify
+        Querify.config.per_page = 20
+        Querify.config.min_per_page = 10
+        Querify.config.max_per_page = 50
+    end
+
+    def clear_params
+        Querify.params.clear
+    end
+
+end

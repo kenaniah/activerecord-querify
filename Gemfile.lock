@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    querify (0.4.1)
+    querify (1.0.0)
       chronic
       rails (~> 4.2)
 
