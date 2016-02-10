@@ -109,13 +109,15 @@ module Querify
 					20
 				end
 			end
-
 			# Override using the params hash if parsable
 			unless Querify.params[:per_page].nil?
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
 			# Return it
+
+			binding.pry
 			return per_page
+
 
 		end
 

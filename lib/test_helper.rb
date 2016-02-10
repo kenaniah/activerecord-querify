@@ -32,6 +32,10 @@ module PaginationTestHelper
         Querify.params.clear
     end
 
+    def jsonify
+        return json = JSON.parse(response.body)
+    end
+
 end
 
 module SortableTestHelper

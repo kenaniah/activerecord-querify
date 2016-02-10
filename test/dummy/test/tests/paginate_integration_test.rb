@@ -3,6 +3,10 @@ require 'test_helper'
 class PaginationTest < ActionDispatch::IntegrationTest
     include PaginationTestHelper
 
+    def setup
+        configure_querify
+    end
+
 # Group: No Query String
 
         test 'uses hardcoded default for per_page settings if no options or config given' do
@@ -13,24 +17,18 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
             get "/posts"
 
-            json = JSON.parse(response.body)
-
             # Default page length
-            assert_equal 20, json.length
+            assert_equal 20, jsonify.length
 
             # Ensure we are on the first page of results
-            assert_equal 1, json.first['id']
+            assert_equal 1, jsonify.first['id']
 
     	end
 
     	test 'uses config for per_page settings if no option given' do
-
-            configure_querify
-
             get '/posts'
 
-            json = JSON.parse(response.body)
-            assert_equal 20, json.length
+            assert_equal 20, jsonify.length
     	end
 
 
@@ -38,66 +36,50 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
     	test 'returns the per_page number given in query string if it falls between configured max and min' do
 
-            configure_querify
-
             get '/posts?per_page=27'
 
-            json = JSON.parse(response.body)
-            assert_equal 27, json.length
+            assert_equal 27, jsonify.length
     	end
 
         test 'configured max_per_page limits the resuts requested by the query string' do
 
-            configure_querify
-
             get '/posts?per_page=100'
 
-            json = JSON.parse(response.body)
-            assert_equal 50, json.length
+            assert_equal 50, jsonify.length
         end
 
 
         test 'min_per_page in query string has no effect' do
 
-            configure_querify
-
             get '/posts?min_per_page=25'
 
-            json = JSON.parse(response.body)
-            assert_equal 20, json.length
+            assert_equal 20, jsonify.length
 
         end
 
         test 'max_per_page in query string has no effect' do
 
-            configure_querify
-
             get '/posts?max_per_page=15'
 
-            json = JSON.parse(response.body)
-            assert_equal 20, json.length
+            assert_equal 20, jsonify.length
 
         end
 
         test 'per_page=nil in query string returns the configured min_per_page' do
 
-            configure_querify
-
             get '/posts?per_page=nil'
 
-            json = JSON.parse(response.body)
-            assert_equal 10, json.length
+            assert_equal 10, jsonify.length
 
         end
 
         test 'returns the correct page' do
 
-            configure_querify
-
             get '/posts?page=2'
 
-            json = JSON.parse(response.body)
-            assert_equal 21, json.first['id']
+            jsonify
+
+            assert_equal 21, jsonify.first['id']
 
         end
 
@@ -106,7 +88,7 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
     	test 'uses the configured per_page if max_per_page option is negative' do
 
-            configure_querify && clear_params
+            clear_params
 
             posts = Post.paginate(max_per_page: -1)
 
@@ -116,7 +98,7 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
     	test 'uses configured per_page if min_per_page option is negative' do
 
-            configure_querify && clear_params
+            clear_params
 
             posts = Post.paginate(min_per_page: -1)
 
@@ -125,37 +107,70 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
 
     	test 'sets the page stats HTTP headers if requested' do
-            configure_querify
 
             get '/posts?page_total_stats=1'
 
-            # assert_equal "20", response.header['X-Per-Page']
-            # assert_equal "1", response.header['X-Current-Page']
-            binding.pry
-            # TODO test total pages and total results
+            assert_equal "20", response.header['X-Per-Page']
+            assert_equal "1", response.header['X-Current-Page']
+            assert_equal (Post.count.to_f/20).ceil, response.header['X-Total-Pages'].to_i
+            assert_equal Post.count, response.header['X-Total-Results'].to_i
 
+        end
+
+        test 'setting max_per_page option to nil disables the maximum' do
+            clear_params
+
+            posts = Post.paginate(max_per_page: nil, per_page: 60)
+
+            assert_equal 60, posts.length
+
+        end
+
+        test 'setting min_per_page option to 0 disables the minimum' do
+            clear_params
+
+            posts = Post.paginate(min_per_page: 0, per_page: 1)
+
+            assert_equal 1, posts.length
+
+        end
+
+        test 'pagination defaults to the min if per_page is set to 0 in query string' do
+            get '/posts?per_page=0'
+
+            assert_equal Querify.config.min_per_page, jsonify.length
 
         end
 
 
+        test '#paginated? method reveals whether query is paginated' do
+
+            a = Post.all
+            b = Post.all.paginate
+
+            assert_not a.paginated?
+            assert b.paginated?
+
+        end
+
         test 'does not set the per_page HTTP headers unless requested' do
-            configure_querify
 
             get '/posts'
+
+            assert_equal "20", response.header['X-Per-Page']
+            assert_equal "1", response.header['X-Current-Page']
+            assert_nil response.header['X-Total-Pages']
+            assert_nil response.header['X-Total-Results']
         end
 
 
 # Group: Complex queries
 
     test 'it returns the right result from a complex query' do
-        configure_querify
         get '/posts?per_page=33&page=2'
 
-        json = JSON.parse(response.body)
-        assert_equal 34, json.first['id']
-        assert_equal 33, json.length
-
+        assert_equal 34, jsonify.first['id']
+        assert_equal 33, jsonify.length
     end
-
 
 end
