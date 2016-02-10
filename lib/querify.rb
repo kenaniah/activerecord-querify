@@ -1,6 +1,7 @@
 require 'active_support/concern'
 
 # Pagination module
+require 'querify/exceptions'
 require 'querify/paginate'
 
 # Sorting module
@@ -44,33 +45,48 @@ module Querify
 	end
 
 	# Filters the query using :where from the params hash, throwing InvalidOperator exceptions
-	def querify! **options
-		_querify true, **options
+	def querify! allowed_columns: [], options: {}
+		_querify true, allowed_columns: allowed_columns, options: options
 	end
 
 	# Filters the query using :where from the params hash, silently ignoring InvalidOperator exceptions
-	def querify **options
-		_querify false, **options
+	def querify allowed_columns: [], options: {}
+		_querify false, allowed_columns: allowed_columns, options: options
 	end
 
-	protected def _querify throw_errors, **options
-
-		puts options.inspect
+	protected def _querify throw_errors, allowed_columns: [], options: {}
 
 		query = self
+
+		# Prepare the list of allowed columns (if passed)
+		allowed_columns = allowed_columns.map &:to_s
 
 		# Filter the query based on :where from query string
 		if Querify.params[:where]
 
 			Querify.params[:where].each do |column, filters|
+
 				filters.each do |operator, value|
+
 					begin
+
+						column = column.to_s
+
+						# Perform column security
+						unless allowed_columns.empty? || allowed_columns.include?(column)
+							raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
+						end
+
+						# Filter the query
 						predicate = Querify::Predicate.new column, operator, value
 						query = query.where(*predicate.to_a)
-					rescue Querify::InvalidOperator => err
+
+					rescue Querify::Error => err
 						raise err if throw_errors
 					end
+
 				end
+
 			end
 
 		end

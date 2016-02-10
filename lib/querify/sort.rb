@@ -2,9 +2,6 @@ require 'chronic'
 
 module Querify
 
-	# Thrown when an invalid sort direction is given
-	class InvalidDirection < StandardError; end
-
 	# Represents an individual column to be added to the order by clause
 	class Sort
 
