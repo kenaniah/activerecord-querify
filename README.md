@@ -33,7 +33,7 @@ Post.find(params[:post_id]).comments.paginate.sortable.querify.order(id: :desc)
 And then manipulate your query via URL params:
 
 ```
-www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[num_comments][gt]=5
+www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[created_at][gt]=2+days+ago
 ```
 
 ## Automatic Pagination

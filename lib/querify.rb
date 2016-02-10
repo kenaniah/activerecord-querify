@@ -45,22 +45,22 @@ module Querify
 	end
 
 	# Filters the query using :where from the params hash, throwing exceptions
-	def querify! allowed_columns: {}
-		_querify true, allowed_columns: allowed_columns
+	def querify! allowed_columns: {}, restrict: false
+		_querify true, allowed_columns: allowed_columns, restrict: restrict
 	end
 
 	# Filters the query using :where from the params hash, silently ignoring exceptions
-	def querify allowed_columns: {}
-		_querify false, allowed_columns: allowed_columns
+	def querify allowed_columns: {}, restrict: false
+		_querify false, allowed_columns: allowed_columns, restrict: restrict
 	end
 
-	protected def _querify throw_errors, allowed_columns: {}, autodetect_columns: true
+	protected def _querify throw_errors, allowed_columns: {}, restrict: false
 
 		query = self
 
 		# Prepare the list of allowed columns
 		allowed_columns = allowed_columns.stringify_keys
-		if autodetect_columns
+		unless restrict
 			allowed_columns = _detect_columns.merge allowed_columns
 		end
 

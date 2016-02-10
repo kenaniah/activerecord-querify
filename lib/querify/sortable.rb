@@ -2,22 +2,22 @@ module Querify
 	module Sortable
 
 		# Sorts the query, throwing exceptions
-		def sortable! allowed_columns: {}
-			_sortable true, allowed_columns: allowed_columns
+		def sortable! allowed_columns: {}, restrict: false
+			_sortable true, allowed_columns: allowed_columns, restrict: restrict
 		end
 
 		# Sorts the query, silently ignoring exceptions
-		def sortable allowed_columns: {}
-			_sortable false, allowed_columns: allowed_columns
+		def sortable allowed_columns: {}, restrict: false
+			_sortable false, allowed_columns: allowed_columns, restrict: restrict
 		end
 
-		protected def _sortable throw_errors, allowed_columns: {}, autodetect_columns: true
+		protected def _sortable throw_errors, allowed_columns: {}, restrict: false
 
 			query = self
 
 			# Prepare the list of allowed columns
 			allowed_columns = allowed_columns.stringify_keys
-			if autodetect_columns
+			unless restrict
 				allowed_columns = _detect_columns.merge allowed_columns
 			end
 
