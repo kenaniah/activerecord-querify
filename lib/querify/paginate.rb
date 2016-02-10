@@ -24,9 +24,9 @@ module Querify
 			Querify.headers = {}
 			# Determine config
 
-			options[:per_page] = options.fetch(:per_page).to_i rescue Querify.config.per_page || 20
-			binding.pry
-			options[:min_per_page] = options.fetch(:min_per_page).to_i rescue Querify.config.min_per_page || 20
+
+			# Determine config options
+			options[:min_per_page] = determine_min options
 			options[:max_per_page] = determine_max options
 
 			current_page = determine_current_page options
@@ -83,13 +83,37 @@ module Querify
 
 		end
 
+		def determine_min options
+
+			# Start with options and then fall back to config value
+			begin
+				(options.fetch(:min_per_page) || raise).to_i
+			rescue
+				begin
+					(Querify.config.min_per_page || raise).to_i
+				rescue
+					20
+				end
+			end
+
+		end
+
 		# Determines the number of results per page (params overrides options)
 		def determine_per_page options
-			# Assume 0 if the :per_page option is not provided or unparsable
-			per_page = options[:per_page].to_i rescue 0
+
+			# Start with options and then fall back to config value
+			per_page = begin
+				(options.fetch(:per_page) || raise).to_i
+			rescue
+				begin
+					(Querify.config.per_page || raise).to_i
+				rescue
+					20
+				end
+			end
 
 			# Override using the params hash if parsable
-			if defined? Querify.params[:per_page]
+			unless Querify.params[:per_page].nil?
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
 			# Return it

@@ -2,9 +2,6 @@ require 'chronic'
 
 module Querify
 
-	# Thrown when an invalid operator is given
-	class InvalidOperator < StandardError; end
-
 	# Represents an individual predicate to be added to a where clause
 	class Predicate
 
@@ -34,9 +31,9 @@ module Querify
 			empty: ''
 		}.freeze
 
-		def initialize column, operator, value, options = {}
+		def initialize column, operator, value, type
 
-			self.options = options.is_a?(Hash) ? options : {}
+			self.type = type
 			self.column = column
 			self.value = value
 			self.operator = operator
@@ -87,12 +84,12 @@ module Querify
 			@value
 		end
 
-		def options= opts
-			@options = opts.symbolize_keys
+		def type= type
+			@type = type.to_sym
 		end
 
-		def options
-			@options
+		def type
+			@type
 		end
 
 		# Returns the predicate as a hash
@@ -129,23 +126,23 @@ module Querify
 		# Returns the proper value, given the operator
 		def parse_value val
 
+			# Return a convertable value
+			return VALUES[@value[1..-1].to_sym] if @value =~ /^\:/ && VALUES.has_key?(@value[1..-1].to_sym)
+
 			# Return a search string
 			return "%#{@value.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
 
 			# Return an integer
-			return @value.to_i if @options[:integer]
+			return @value.to_i if [:integer].include? @type
 
 			# Return a float
-			return @value.to_f if @options[:float]
+			return @value.to_f if [:decimal, :float].include? @type
 
 			# Return a time
-			return ::Chronic.parse @value.to_s if @options[:chronic]
+			return ::Chronic.parse @value.to_s if [:datetime, :timestamp, :time, :date].include? @type
 
 			# Return a list from delimited input
 			return @value.split(@options[:delimiter] || ',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a?(Array)
-
-			# Return a convertable value
-			return VALUES[@value[1..-1].to_sym] if @value =~ /^\:/ && VALUES.has_key?(@value[1..-1].to_sym)
 
 			# Return the value
 			return @value
