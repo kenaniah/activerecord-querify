@@ -3,11 +3,15 @@ module Querify
 
 		# Sorts the query, throwing InvalidDirection exceptions
 		def sortable!
-			sortable true
+			_sortable true
 		end
 
 		# Sorts the query, silently ignoring InvalidDirection exceptions
-		def sortable throw_errors = false
+		def sortable
+			_sortable false
+		end
+
+		protected def _sortable throw_errors
 
 			query = self
 

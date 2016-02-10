@@ -44,12 +44,18 @@ module Querify
 	end
 
 	# Filters the query using :where from the params hash, throwing InvalidOperator exceptions
-	def querify!
-		querify true
+	def querify! **options
+		_querify true, **options
 	end
 
 	# Filters the query using :where from the params hash, silently ignoring InvalidOperator exceptions
-	def querify throw_errors = false
+	def querify **options
+		_querify false, **options
+	end
+
+	protected def _querify throw_errors, **options
+
+		puts options.inspect
 
 		query = self
 
