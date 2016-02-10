@@ -33,7 +33,8 @@ Post.find(params[:post_id]).comments.paginate.sortable.querify.order(id: :desc)
 And then manipulate your query via URL params:
 
 ```
-www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[
+www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[num_comments][gt]=5
+```
 
 ## Automatic Pagination
 
@@ -197,7 +198,7 @@ Post.sortable! allowed_columns: [:id, :name] # throws an exception for columns t
 
 #### `Querify::InvalidDirection`
 
-When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown. 
+When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown.
 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
@@ -205,7 +206,7 @@ To force this exception to bubble up, use the `#sortable!` method instead.
 
 #### `Querify::InvalidSortColumn`
 
-This exception is thrown when sortable is called with a whitelist and a sort is requested for a column that is not in the whitelist. 
+This exception is thrown when sortable is called with a whitelist and a sort is requested for a column that is not in the whitelist.
 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
