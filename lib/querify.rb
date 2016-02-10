@@ -1,6 +1,7 @@
 require 'active_support/concern'
 
 # Pagination module
+require 'querify/exceptions'
 require 'querify/paginate'
 
 # Sorting module
@@ -67,7 +68,7 @@ module Querify
 					begin
 						predicate = Querify::Predicate.new column, operator, value
 						query = query.where(*predicate.to_a)
-					rescue Querify::InvalidOperator => err
+					rescue Querify::Error => err
 						raise err if throw_errors
 					end
 				end

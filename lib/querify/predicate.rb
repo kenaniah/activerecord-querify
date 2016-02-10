@@ -2,9 +2,6 @@ require 'chronic'
 
 module Querify
 
-	# Thrown when an invalid operator is given
-	class InvalidOperator < StandardError; end
-
 	# Represents an individual predicate to be added to a where clause
 	class Predicate
 

@@ -21,7 +21,7 @@ module Querify
 				Querify.params[:sort].each do |column, direction|
 					begin
 						query = query.order Querify::Sort.new(column, direction).to_sql
-					rescue Querify::InvalidDirection => err
+					rescue Querify::Error => err
 						raise err if throw_errors
 					end
 				end
