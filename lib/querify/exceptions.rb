@@ -9,4 +9,11 @@ module Querify
 	# Thrown when an invalid direction is given to sort
 	class InvalidDirection < Error; end
 
+	# Thrown when in invalid column is passed
+	class InvalidColumn < Error; end
+
+	class InvalidSortColumn < InvalidColumn; end;
+
+	class InvalidFilterColumn < InvalidColumn; end;
+
 end
