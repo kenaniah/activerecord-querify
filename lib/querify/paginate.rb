@@ -86,7 +86,7 @@ module Querify
 			per_page = options[:per_page].to_i rescue 0
 
 			# Override using the params hash if parsable
-			if defined? Querify.params[:per_page]
+			unless Querify.params[:per_page].nil?
 				per_page = Querify.params[:per_page].to_i rescue per_page
 			end
 
