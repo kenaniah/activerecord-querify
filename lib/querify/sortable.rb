@@ -1,22 +1,25 @@
 module Querify
 	module Sortable
 
-		# Sorts the query, throwing InvalidDirection exceptions
-		def sortable! allowed_columns: []
+		# Sorts the query, throwing exceptions
+		def sortable! allowed_columns: {}
 			_sortable true, allowed_columns: allowed_columns
 		end
 
-		# Sorts the query, silently ignoring InvalidDirection exceptions
-		def sortable allowed_columns: []
+		# Sorts the query, silently ignoring exceptions
+		def sortable allowed_columns: {}
 			_sortable false, allowed_columns: allowed_columns
 		end
 
-		protected def _sortable throw_errors, allowed_columns: []
+		protected def _sortable throw_errors, allowed_columns: {}, autodetect_columns: true
 
 			query = self
 
-			# Prepare the list of allowed columns (if passed)
-			allowed_columns = allowed_columns.map &:to_s
+			# Prepare the list of allowed columns
+			allowed_columns = allowed_columns.stringify_keys
+			if autodetect_columns
+				allowed_columns = _detect_columns.merge allowed_columns
+			end
 
 			# Sort the query based on :sort from query string
 			if Querify.params[:sort]
@@ -28,8 +31,13 @@ module Querify
 						column = column.to_s
 
 						# Perform column security
-						unless allowed_columns.empty? || allowed_columns.include?(column)
+						unless allowed_columns.include?(column)
 							raise Querify::InvalidSortColumn, "'#{column}' is not a sortable column"
+						end
+
+						# Prefix simple column names when joins are present
+						if defined?(self.joins_values) && !column.include?(".")
+							column = self.table_name + "." + column
 						end
 
 						# Sort the query
