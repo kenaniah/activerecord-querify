@@ -87,7 +87,7 @@ module Querify
 						end
 
 						# Prefix simple column names when joins are present
-						if defined?(self.joins_values) && !column.include?(".")
+						if !(self.joins_values.empty?) && !column.include?(".")
 							column = self.table_name + "." + column
 						end
 
