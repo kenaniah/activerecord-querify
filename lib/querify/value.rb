@@ -4,6 +4,20 @@ module Querify
 
 		attr_accessor :value, :type, :operator
 
+		TYPES = [
+			:string,
+			:text,
+			:integer,
+			:float,
+			:decimal,
+			:date,
+			:datetime,
+			:time,
+			:timestamp, # added for convenience
+			:binary,
+			:boolean
+		].freeze
+
 		REPLACEMENTS = {
 			true: true,
 			false: false,
@@ -47,17 +61,29 @@ module Querify
 			# Return a search string
 			return "%#{val.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
 
-			# Return an integer
-			return apply(val, :to_i) if [:integer].include? @type
-
-			# Return a float
-			return apply(val, :to_f) if [:decimal, :float].include? @type
-
-			# Return a time
-			return apply(apply(val, :to_s), Chronic.method(:parse)) if [:datetime, :timestamp, :time, :date].include? @type
-
-			# Return the value
-			return val
+			# Cast the value based on type
+			return case @type
+			when :string, :text
+				# Return a string
+				apply(val, :to_s)
+			when :integer
+				# Return an integer
+				apply(val, :to_i)
+			when :decimal, :float
+				# Return a float
+				apply(val, :to_f)
+			when :date, :datetime, :time, :timestamp
+				# Parse with chronic
+				apply(apply(val, :to_s), Chronic.method(:parse))
+			when :binary
+				# Return a bit
+				val ? 1 : 0
+			when :boolean
+				# Return a boolean
+				val ? true : false
+			else
+				raise Querify::InvalidColumnType, ":#{type} is not a known column type"
+			end
 
 		end
 
