@@ -17,41 +17,51 @@ module Querify
 		query = self
 
 		# Clear out the existing filters array
-		Querify.filters = []
+		Querify.where_filters = []
+		Querify.having_filters = []
 
 		# Prepare the list of allowed columns
 		determine_columns! columns: columns, only: only
 
-		# Filter the query based on :where from query string
-		if Querify.params[:where]
+		# Filter the query based on :where & :having from query string
+		[:where, :having].each do |filter_type|
 
-			Querify.params[:where].each do |column, filters|
+			if Querify.params[filter_type]
 
-				filters.each do |operator, value|
+				Querify.params[filter_type].each do |column, filters|
 
-					begin
+					filters.each do |operator, value|
 
-						column = column.to_s
+						begin
 
-						# Perform column security
-						unless Querify.columns.include?(column)
-							raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
+							column = column.to_s
+
+							# Ensure we're not running HAVING on an ungrouped query
+							unless defined?(self.group_values) && !self.group_values.empty?
+								raise Querify::QueryNotYetGrouped, "You must provide a GROUP BY clause in order to filter via HAVING" if filter_type == :having
+							end
+
+							# Perform column security
+							unless Querify.columns.include?(column)
+								raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
+							end
+
+							# Prefix simple column names when joins are present
+							if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
+								column = self.table_name + "." + column
+							end
+
+							# Filter the query
+							filter = Querify::Filter.new column, operator, value, Querify.columns[column]
+							query = query.send filter_type, *filter.to_a
+
+							# Store the filter
+							Querify.send(filter_type.to_s + "_filters") << filter
+
+						rescue Querify::Error => err
+							raise err if throw_errors
 						end
 
-						# Prefix simple column names when joins are present
-						if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
-							column = self.table_name + "." + column
-						end
-
-						# Filter the query
-						filter = Querify::Filter.new column, operator, value, Querify.columns[column]
-						query = query.where(*filter.to_a)
-
-						# Store the filter
-						Querify.filters << filter
-
-					rescue Querify::Error => err
-						raise err if throw_errors
 					end
 
 				end

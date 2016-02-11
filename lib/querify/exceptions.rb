@@ -3,6 +3,9 @@ module Querify
 	# General error class
 	class Error < StandardError; end;
 
+	# Thrown when providing a HAVING filter before a GROUP BY clause
+	class QueryNotYetGrouped < Error; end;
+
 	# Thrown when an invalid operator is given to a filter
 	class InvalidOperator < Error; end
 
