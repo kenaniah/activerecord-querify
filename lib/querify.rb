@@ -57,7 +57,6 @@ module Querify
 	end
 
 	protected def _querify throw_errors, columns: {}, only: false
-
 		query = self
 
 		# Clear out the existing predicates array
@@ -87,14 +86,13 @@ module Querify
 						end
 
 						# Prefix simple column names when joins are present
-						if defined?(self.joins_values) && !column.include?(".")
+						if !(self.joins_values.empty?) && !column.include?(".")
 							column = self.table_name + "." + column
 						end
 
 						# Filter the query
 						predicate = Querify::Predicate.new column, operator, value, columns[column]
 						query = query.where(*predicate.to_a)
-
 						# Store the predicate
 						Querify.predicates << predicate
 

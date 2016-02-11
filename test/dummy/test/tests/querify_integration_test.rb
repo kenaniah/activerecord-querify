@@ -5,9 +5,8 @@ class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
 
 	test 'it queries' do
 
-		get '/posts?where[name][gt]=AAA'
-
-		assert_equal jsonify.length, Post.where("name > ?",'AAA').length
+		get '/posts?where[name][gt]=aaa'
+		assert_equal jsonify.length, Post.where("name > ?",'aaa').length
 
 	end
 
@@ -15,8 +14,7 @@ class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
 
 		get '/posts?where[name][lt]=ZZZ'
 
-		assert_equal jsonify.length, Post.where("name < ?",'ZZZ\
-		').length
+		assert_equal jsonify.length, Post.where("name < ?",'ZZZ').paginate.length
 
 	end
 
