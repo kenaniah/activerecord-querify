@@ -3,6 +3,15 @@ require 'test_helper'
 class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
     include TestHelper
 
+    def setup
+        setup_data
+    end
+
+    def teardown
+        teardown_data
+    end
+
+
 	test 'it returns greater than' do
 
 		get '/posts?where[name][gt]=aaa'

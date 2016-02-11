@@ -42,4 +42,21 @@ module TestHelper
         return json = JSON.parse(response.body)
     end
 
+    def setup_data
+        100.times do
+            FactoryGirl.create(:post)
+        end
+
+        30.times do
+            FactoryGirl.create(:comment)
+        end
+    end
+
+    def teardown_data
+        Post.destroy_all
+        Comment.destroy_all
+        Author.destroy_all
+    end
+    
+
 end

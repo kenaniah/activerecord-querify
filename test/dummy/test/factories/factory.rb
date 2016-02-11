@@ -1,7 +1,7 @@
 FactoryGirl.define do
 	factory :post do
 		transient do
-			author { Author.last || create(:author)}
+			author { create(:author)}
 			post { "Post " +  Random.rand(1..10000).to_s }
 		end
 

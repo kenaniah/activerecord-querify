@@ -5,6 +5,11 @@ class PaginationTest < ActionDispatch::IntegrationTest
 
     def setup
         configure_querify
+        setup_data
+    end
+
+    def teardown
+        teardown_data
     end
 
 

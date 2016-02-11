@@ -3,6 +3,15 @@ require 'test_helper'
 class SortableIntegrationTest < ActionDispatch::IntegrationTest
     include TestHelper
 
+    def setup
+        setup_data
+    end
+
+    def teardown
+        teardown_data
+    end
+
+
     test 'sorts by ascending column name' do
     		get '/posts?sort[name]=asc'
     		assert jsonify[0]['name'] < jsonify[1]['name'] && jsonify[1]['name'] < jsonify[2]['name']
@@ -32,7 +41,7 @@ class SortableIntegrationTest < ActionDispatch::IntegrationTest
 
     test 'sorts correctly on column names' do
         get '/posts?sort[author_id]=desc'
-
+        
         assert jsonify.first['author_id'] > jsonify[1]['author_id']
 
     end
