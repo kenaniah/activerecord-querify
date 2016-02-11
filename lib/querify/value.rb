@@ -38,8 +38,6 @@ module Querify
 
 			val = @value
 
-			puts "#{val} #{@operator} #{@type}"
-
 			# Return a convertable value
 			return REPLACEMENTS[val[1..-1].to_sym] if val =~ /^\:/ && REPLACEMENTS.has_key?(val[1..-1].to_sym)
 
