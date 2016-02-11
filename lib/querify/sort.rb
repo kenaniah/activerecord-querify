@@ -54,17 +54,17 @@ module Querify
 			ActiveRecord::Base.connection.quote_column_name @column
 		end
 
-		# Returns the predicate as a hash
+		# Returns the filter as a hash
 		def to_hash
 			{@column => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
 		end
 
-		# Returns predicate as an escaped query string param
+		# Returns filter as an escaped query string param
 		def to_query key="sort"
 			to_hash.to_query key
 		end
 
-		# Returns predicate as an unescaped query string param
+		# Returns filter as an unescaped query string param
 		def to_s
 			URI.unescape to_query
 		end
