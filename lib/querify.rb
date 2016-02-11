@@ -30,7 +30,7 @@ module Querify
 		attr_accessor :params
 		attr_accessor :headers
 		attr_accessor :columns
-		attr_accessor :filters
+		attr_accessor :where_filters, :having_filters
 		attr_accessor :sorts
 
 		def config
