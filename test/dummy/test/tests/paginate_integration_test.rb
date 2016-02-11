@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class PaginationTest < ActionDispatch::IntegrationTest
-    include PaginationTestHelper
+    include TestHelper
 
     def setup
         configure_querify

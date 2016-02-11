@@ -21,7 +21,7 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
 end
 
 
-module PaginationTestHelper
+module TestHelper
     def configure_querify
         Querify.config.per_page = 20
         Querify.config.min_per_page = 10

@@ -72,7 +72,6 @@ module Querify
 		end
 
 		def value= val
-			binding.pry
 			@value = val
 		end
 

@@ -115,7 +115,6 @@ module Querify
 			end
 			# Return it
 
-			binding.pry
 			return per_page
 
 
