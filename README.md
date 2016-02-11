@@ -10,9 +10,9 @@ Querify provides an easy interface for manipulating Active Record queries given 
 |----------------------|---------|
 | [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination |
 | [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters |
-| `#querify` | where clauses based on a hash of parameters |
+| `#filterable` | where clauses based on a hash of parameters |
 | [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions instead of silently ignoring them |
-| `#querify!` | like `#querify`, but throws exceptions instead of silently ignoring them |
+| `#filterable!` | like `#filterable`, but throws exceptions instead of silently ignoring them |
 
 Querify was designed to be query string friendly, making pagination, sorting, and filtering based on URL parameters trivial.
 
@@ -27,7 +27,7 @@ gem 'querify'
 To make a query automatically paginate, sort, and dynamically filter based on query string parameters, just add all 3 methods to a query:
 
 ```ruby
-Post.find(params[:post_id]).comments.paginate.sortable.querify.order(id: :desc)
+Post.find(params[:post_id]).comments.paginate.sortable.filterable.order(id: :desc)
 ```
 
 And then manipulate your query via URL params:
@@ -135,7 +135,7 @@ Pagination may be disabled for a single request when the following conditions ar
 
 ### Detecting Pagination
 
-Because pagination may be dynamically disabled following the method above, you may ask if any query has been paginted by using the `#paginated?` method:
+Because pagination may be dynamically disabled following the method above, you may ask if any query has been paginated by using the `#paginated?` method:
 
 ```ruby
 a = Post.all
@@ -209,7 +209,7 @@ To ensure that clients do not pass columns that are non-existent or restricted, 
 
 ```ruby
 Post.sortable columns: {id: :integer, name: :text}, only: true # silently ignores columns that aren't whitelisted
-Post.querify! columns: {id: :integer, name: :text}, only: true # throws an exception for columns that aren't whitelisted
+Post.filterable! columns: {id: :integer, name: :text}, only: true # throws an exception for columns that aren't whitelisted
 ```
 
 `columns:` takes a hash where the keys represent column names and the values represent the Active Record type of the column.

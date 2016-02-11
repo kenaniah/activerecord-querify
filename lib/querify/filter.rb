@@ -2,8 +2,8 @@ require 'chronic'
 
 module Querify
 
-	# Represents an individual predicate to be added to a where clause
-	class Predicate
+	# Represents an individual filter to be added to a where clause
+	class Filter
 
 		OPERATORS = {
 			lt: '<',
@@ -91,17 +91,17 @@ module Querify
 			@type
 		end
 
-		# Returns the predicate as a hash
+		# Returns the filter as a hash
 		def to_hash use_raw_value = true
 			{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
 		end
 
-		# Returns predicate as an escaped query string param
+		# Returns filter as an escaped query string param
 		def to_query key="where"
 			to_hash.to_query key
 		end
 
-		# Returns predicate as an unescaped query string param
+		# Returns filter as an unescaped query string param
 		def to_s
 			URI.unescape to_query
 		end
