@@ -19,12 +19,8 @@ module Querify
 		# Clear out the existing filters array
 		Querify.filters = []
 
-
 		# Prepare the list of allowed columns
-		columns = columns.stringify_keys
-		unless only
-			columns = _detect_columns.merge columns
-		end
+		determine_columns! columns: columns, only: only
 
 		# Filter the query based on :where from query string
 		if Querify.params[:where]
@@ -38,7 +34,7 @@ module Querify
 						column = column.to_s
 
 						# Perform column security
-						unless columns.include?(column)
+						unless Querify.columns.include?(column)
 							raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
 						end
 
@@ -48,7 +44,7 @@ module Querify
 						end
 
 						# Filter the query
-						filter = Querify::Filter.new column, operator, value, columns[column]
+						filter = Querify::Filter.new column, operator, value, Querify.columns[column]
 						query = query.where(*filter.to_a)
 
 						# Store the filter

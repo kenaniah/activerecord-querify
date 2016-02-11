@@ -29,6 +29,7 @@ module Querify
 
 		attr_accessor :params
 		attr_accessor :headers
+		attr_accessor :columns
 		attr_accessor :filters
 		attr_accessor :sorts
 
@@ -52,8 +53,20 @@ module Querify
 		attr_accessor :max_per_page
 	end
 
+	# Determines the columns available for a query
+	protected def determine_columns! columns: {}, only: false
+
+		columns = columns.stringify_keys
+		unless only
+			columns = _detect_columns.merge columns
+		end
+
+		Querify.columns = columns
+
+	end
+
 	# Detects available columns and returns their types
-	protected def _detect_columns
+	private def _detect_columns
 
 		# Detect columns available from the model
 		detected_columns = {}
@@ -80,6 +93,7 @@ module Querify
 end
 Querify.headers ||= {}
 Querify.params ||= {}
+Querify.columns ||= {}
 
 # Mix into ActiveRecord
 ::ActiveRecord::Base.extend Querify

@@ -19,10 +19,7 @@ module Querify
 			Querify.sorts = []
 
 			# Prepare the list of allowed columns
-			columns = columns.stringify_keys
-			unless only
-				columns = _detect_columns.merge columns
-			end
+			determine_columns! columns: columns, only: only
 
 			# Sort the query based on :sort from query string
 			if Querify.params[:sort]
@@ -34,7 +31,7 @@ module Querify
 						column = column.to_s
 
 						# Perform column security
-						unless columns.include?(column)
+						unless Querify.columns.include?(column)
 							raise Querify::InvalidSortColumn, "'#{column}' is not a sortable column"
 						end
 
