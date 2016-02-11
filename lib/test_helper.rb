@@ -20,6 +20,12 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures :all
 end
 
+class ActiveSupport::TestCase
+    class << self
+      alias :context :describe
+    end
+end
+
 
 module TestHelper
     def configure_querify
@@ -36,7 +42,4 @@ module TestHelper
         return json = JSON.parse(response.body)
     end
 
-end
-
-module SortableTestHelper
 end

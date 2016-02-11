@@ -3,7 +3,7 @@ require 'test_helper'
 describe Querify::Sortable do
 
 	it 'is a module' do
-        assert_kind_of Module, Sortable
+        assert_kind_of Module, Querify::Sortable
     end
 
 	it 'has access to the test dummy model' do
