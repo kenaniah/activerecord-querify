@@ -22,21 +22,11 @@ module Querify
 
 		INVERTED_OPERATORS = OPERATORS.dup.invert.freeze
 
-		VALUES = {
-			true: true,
-			false: false,
-			nil: nil,
-			null: nil,
-			blank: '',
-			empty: ''
-		}.freeze
-
 		def initialize column, operator, value, type
 
-			self.type = type
 			self.column = column
-			self.value = value
 			self.operator = operator
+			@value = Querify::Value.new value, type, self.operator
 
 		end
 
@@ -50,6 +40,10 @@ module Querify
 
 			raise(InvalidOperator, "'#{op}' is not a valid operator") unless @operator
 
+			# Notify the value of a changed operator
+			@value.operator = @operator if @value
+
+			# Return it
 			@operator
 
 		end
@@ -72,23 +66,23 @@ module Querify
 		end
 
 		def value= val
-			@value = val
+			@value.value = val
 		end
 
 		def value
-			parse_value @value
+			@value.value
 		end
 
 		def raw_value
-			@value
+			@value.raw_value
 		end
 
 		def type= type
-			@type = type.to_sym
+			@value.type = type
 		end
 
 		def type
-			@type
+			@value.type
 		end
 
 		# Returns the filter as a hash
@@ -120,32 +114,6 @@ module Querify
 			else
 				'?'
 			end
-		end
-
-		# Returns the proper value, given the operator
-		def parse_value val
-
-			# Return a convertable value
-			return VALUES[@value[1..-1].to_sym] if @value =~ /^\:/ && VALUES.has_key?(@value[1..-1].to_sym)
-
-			# Return a search string
-			return "%#{@value.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
-
-			# Return an integer
-			return @value.to_i if [:integer].include? @type
-
-			# Return a float
-			return @value.to_f if [:decimal, :float].include? @type
-
-			# Return a time
-			return ::Chronic.parse @value.to_s if [:datetime, :timestamp, :time, :date].include? @type
-
-			# Return a list from delimited input
-			return @value.split(@options[:delimiter] || ',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a?(Array)
-
-			# Return the value
-			return @value
-
 		end
 
 	end
