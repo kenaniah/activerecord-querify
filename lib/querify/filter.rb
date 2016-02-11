@@ -102,6 +102,9 @@ module Querify
 
 		# Returns the SQL and parameter needed to populate a WHERE clause
 		def to_a
+			if self.type == :column
+				return ["#{quoted_column} #{@operator} #{placeholder}"]
+			end
 			["#{quoted_column} #{@operator} #{placeholder}", value]
 		end
 
@@ -111,6 +114,8 @@ module Querify
 		def placeholder
 			if ['IN', 'NOT IN'].include? @operator
 				'(?)'
+			elsif self.type == :column
+				value
 			else
 				'?'
 			end
