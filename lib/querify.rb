@@ -61,6 +61,11 @@ module Querify
 			columns = _detect_columns.merge columns
 		end
 
+		# Ensure the sanity of all column types
+		columns.each do |name, type|
+			raise Querify::InvalidColumnType, ":#{type} is not a known column type for column '#{name}'" unless Value::TYPES.include? type.to_sym
+		end
+
 		Querify.columns = columns
 
 	end
