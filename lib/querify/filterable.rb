@@ -16,8 +16,8 @@ module Querify
 
 		query = self
 
-		# Clear out the existing predicates array
-		Querify.predicates = []
+		# Clear out the existing filters array
+		Querify.filters = []
 
 
 		# Prepare the list of allowed columns
@@ -48,11 +48,11 @@ module Querify
 						end
 
 						# Filter the query
-						predicate = Querify::Predicate.new column, operator, value, columns[column]
-						query = query.where(*predicate.to_a)
+						filter = Querify::Filter.new column, operator, value, columns[column]
+						query = query.where(*filter.to_a)
 
-						# Store the predicate
-						Querify.predicates << predicate
+						# Store the filter
+						Querify.filters << filter
 
 					rescue Querify::Error => err
 						raise err if throw_errors

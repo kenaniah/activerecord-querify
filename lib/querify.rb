@@ -14,8 +14,8 @@ require 'querify/sortable'
 # Filtering module
 require 'querify/filterable'
 
-# Hash predicates module
-require 'querify/predicate'
+# Hash filters module
+require 'querify/filter'
 
 # Rails integration
 require 'querify/middleware'
@@ -29,7 +29,7 @@ module Querify
 
 		attr_accessor :params
 		attr_accessor :headers
-		attr_accessor :predicates
+		attr_accessor :filters
 		attr_accessor :sorts
 
 		def config
