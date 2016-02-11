@@ -36,26 +36,49 @@ module Querify
 		# Returns the proper value, given the operator
 		def parsed_value
 
+			val = @value
+
+			puts "#{val} #{@operator} #{@type}"
+
 			# Return a convertable value
-			return REPLACEMENTS[@value[1..-1].to_sym] if @value =~ /^\:/ && REPLACEMENTS.has_key?(@value[1..-1].to_sym)
+			return REPLACEMENTS[val[1..-1].to_sym] if val =~ /^\:/ && REPLACEMENTS.has_key?(val[1..-1].to_sym)
+
+			# Convert to a list from delimited input if a list type
+			val = val.split(',') if ['IN', 'NOT IN'].include?(@operator) && !val.is_a?(Array)
 
 			# Return a search string
-			return "%#{@value.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
+			return "%#{val.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
 
 			# Return an integer
-			return @value.to_i if [:integer].include? @type
+			return apply(val, :to_i) if [:integer].include? @type
 
 			# Return a float
-			return @value.to_f if [:decimal, :float].include? @type
+			return apply(val, :to_f) if [:decimal, :float].include? @type
 
 			# Return a time
-			return ::Chronic.parse @value.to_s if [:datetime, :timestamp, :time, :date].include? @type
-
-			# Return a list from delimited input
-			return @value.split(',') if ['IN', 'NOT IN'].include?(@operator) && !@value.is_a?(Array)
+			return apply(apply(val, :to_s), Chronic.method(:parse)) if [:datetime, :timestamp, :time, :date].include? @type
 
 			# Return the value
-			return @value
+			return val
+
+		end
+
+		# Applies a method to a value
+		protected def apply value, method
+
+			if value.is_a? Array
+				if method.is_a? Symbol
+					value.map { |v| v.send method}
+				else
+					value.map { |v| method.call v }
+				end
+			else
+				if method.is_a? Symbol
+					value.send method
+				else
+					method.call value
+				end
+			end
 
 		end
 
