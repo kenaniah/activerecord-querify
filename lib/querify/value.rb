@@ -15,7 +15,8 @@ module Querify
 			:time,
 			:timestamp, # added for convenience
 			:binary,
-			:boolean
+			:boolean,
+			:column # Represents another column in the query
 		].freeze
 
 		REPLACEMENTS = {
@@ -44,6 +45,9 @@ module Querify
 		end
 
 		def type= type
+
+			# Sanity check
+			raise Querify::InvalidColumnType, ":#{type} is not a known column type" unless TYPES.include? type.to_sym
 			@type = type.to_sym
 		end
 
@@ -81,8 +85,25 @@ module Querify
 			when :boolean
 				# Return a boolean
 				val ? true : false
+			when :column
+
+				column = val.to_s
+
+				# Perform column security
+				unless Querify.columns.include?(column)
+					raise Querify::InvalidColumn, "'#{column}' is not an available column"
+				end
+
+				# Prefix simple column names when joins are present
+				if defined?(self.joins_values) && !column.include?(".")
+					column = self.table_name + "." + column
+				end
+
+				# Return it
+				ActiveRecord::Base.connection.quote_column_name column
+
 			else
-				raise Querify::InvalidColumnType, ":#{type} is not a known column type"
+				raise "Values typecast case fell through for type :#{@type}"
 			end
 
 		end
