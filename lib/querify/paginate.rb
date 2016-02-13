@@ -9,7 +9,7 @@ module Querify
 		end
 
 		def paginated?
-			_querify_paginated ? true : false
+			defined?(_querify_paginated) && _querify_paginated ? true : false
 		end
 
 		# Accepts the following options:
