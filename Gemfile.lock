@@ -43,6 +43,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    ansi (1.5.0)
     arel (6.0.3)
     builder (3.2.2)
     chronic (0.10.2)
@@ -54,6 +55,8 @@ GEM
     factory_girl_rails (4.6.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
+    faker (1.6.1)
+      i18n (~> 0.5)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     i18n (0.7.0)
@@ -66,6 +69,11 @@ GEM
     mime-types (2.99)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
+    minitest-reporters (1.1.7)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     pry (0.10.3)
@@ -100,6 +108,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.5.0)
+    ruby-progressbar (1.7.5)
     slop (3.6.0)
     sprockets (3.5.2)
       concurrent-ruby (~> 1.0)
@@ -118,7 +127,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  factory_girl_rails (~> 4.0)
+  factory_girl_rails
+  faker
+  minitest-reporters
   pry
   querify!
   sqlite3

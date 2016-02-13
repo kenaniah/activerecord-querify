@@ -12,5 +12,9 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
-gem "factory_girl_rails", "~> 4.0"
-gem 'pry'
+group :development, :test do
+	gem 'pry'
+	gem 'faker'
+	gem 'factory_girl_rails' # Do we need this here?
+	gem 'minitest-reporters'
+end
