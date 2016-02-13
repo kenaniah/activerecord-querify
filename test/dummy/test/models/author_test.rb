@@ -2,23 +2,25 @@ require 'test_helper'
 
 class AuthorTest < ActiveSupport::TestCase
 
-  test "author can create post" do
-      FactoryGirl.create(:post)
+    def setup
+        @author = FactoryGirl.create(:author)
+    end
 
-      assert_not_nil Post.last.author
+    def teardown
+        @author = nil
+    end
 
-      assert_not_nil Author.last.posts[0]
+    test "author can create post" do
+        FactoryGirl.create(:post, author: @author)
 
-  end
+        assert_not_empty @author.posts
+    end
 
-  test "author can create comment" do
-      FactoryGirl.create(:comment)
+    test "author can create comment" do
+        post = FactoryGirl.create(:post, author: @author)
+        FactoryGirl.create(:comment, post: post)
 
-      assert_not_nil Author.last
-
-      assert_not_nil Comment.last.author
-
-  end
-
-
+        assert_not_empty post.comments
+        assert_not_nil post.comments.first.author
+    end
 end

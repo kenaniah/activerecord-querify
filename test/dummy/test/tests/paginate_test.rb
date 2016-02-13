@@ -2,26 +2,20 @@ require 'test_helper'
 
 describe Querify::Paginate do
 
-	before do
-		FactoryGirl.create(:post)
-		FactoryGirl.create(:comment)
+	before(:all) do
+		100.times do
+			FactoryGirl.create(:post)
+		end
 	end
 
-
-	it 'has access to the test dummy model' do
-		assert Post
-	end
-
-	it 'can be called on AR models' do
+	it 'ActiveRecord responds to paginate' do
 		assert_respond_to Post, :paginate
+		assert_respond_to Post.all.first.comments, :paginate
 	end
 
-	it 'can be called on AR relations' do
-		assert_respond_to Post.first.comments, :paginate
-	end
-
-	it 'can be called on AR collection proxies' do
-		assert_respond_to Post.all, :paginate
+	it 'ActiveRecord knows the query is paginated' do
+		assert Post.paginate.paginated?
+		assert_equal false, Post.paginated?
 	end
 
 end
