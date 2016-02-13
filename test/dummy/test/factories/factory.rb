@@ -1,8 +1,9 @@
 FactoryGirl.define do
+
 	factory :post do
 		transient do
 			author { create(:author)}
-			post { "Post " +  Random.rand(1..10000).to_s }
+			post { Faker::Lorem.paragraph }
 		end
 
 		name { post }
@@ -11,7 +12,7 @@ FactoryGirl.define do
 
 	factory :author do
 		transient do
-			author_name { "Author " + Random.rand(1..10000).to_s }
+			author_name { Faker::Name.name }
 		end
 
 		name { author_name }
@@ -19,9 +20,9 @@ FactoryGirl.define do
 
 	factory :comment do
 		transient do
-			post { Post.last || create(:post)}
+			post {Post.all.sample || create(:post)}
 			another_author { create(:author)}
-			comment_body { "Comment " + Random.rand(1..10000).to_s }
+			comment_body { Faker::Lorem.sentence }
 		end
 
 		post_id { post.id }
