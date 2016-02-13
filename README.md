@@ -144,7 +144,7 @@ a.paginated? #=> false
 b = Post.all.paginated
 b.paginated? #=> true
 
-c = Post.all.paginated(max_per_page: nil)
+c = Post.all.paginate(max_per_page: nil)
 c.paginated? #=> false when :per_page == 0, true otherwise
 ```
 
