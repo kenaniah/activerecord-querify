@@ -15,8 +15,10 @@ ActiveRecord::Schema.define(version: 20160208195855) do
 
   create_table "authors", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "posts_count"
+    t.integer  "comments_count"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "comments", force: :cascade do |t|
@@ -33,8 +35,9 @@ ActiveRecord::Schema.define(version: 20160208195855) do
   create_table "posts", force: :cascade do |t|
     t.integer  "author_id"
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "comments_count"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   add_index "posts", ["author_id"], name: "index_posts_on_author_id"

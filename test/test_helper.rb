@@ -27,6 +27,11 @@ class ActiveSupport::TestCase
     end
 end
 
+def truncate_db
+	Author.destroy_all
+	Post.destroy_all
+	Comment.destroy_all
+end
 
 module TestHelper
 
@@ -52,12 +57,6 @@ module TestHelper
         30.times do
             FactoryGirl.create(:comment)
         end
-    end
-
-    def teardown_data
-        Post.destroy_all
-        Comment.destroy_all
-        Author.destroy_all
     end
 
 end
