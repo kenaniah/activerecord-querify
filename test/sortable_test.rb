@@ -80,8 +80,40 @@ describe Querify::Sortable do
 
 		it 'sorts multiple columns' do
 
-			Querify.params = {sort: {"num_comments" => "desc", "name" => "desc"}}
+			Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
 			assert_equal @multi, Post.sortable.to_a
+
+		end
+
+		it '#sortable ignores non-available columns' do
+
+			Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+			assert_equal @descending, Post.sortable.to_a
+
+		end
+
+		it '#sortable! errors on non-available columns' do
+
+			Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+			assert_raises Querify::InvalidSortColumn do
+				Post.sortable!.to_a
+			end
+
+		end
+
+		it '#sortable ignores bad operators' do
+
+			Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+			assert_equal @descending, Post.sortable.to_a
+
+		end
+
+		it '#sortable! errors on bad operators' do
+
+			Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+			assert_raises Querify::InvalidDirection do
+				Post.sortable!.to_a
+			end
 
 		end
 
