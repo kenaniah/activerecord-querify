@@ -82,6 +82,7 @@ describe Querify::Sortable do
 
 			Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
 			assert_equal @multi, Post.sortable.to_a
+			assert_equal 2, Querify.sorts.count
 
 		end
 
@@ -89,6 +90,7 @@ describe Querify::Sortable do
 
 			Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
 			assert_equal @descending, Post.sortable.to_a
+			assert_equal 1, Querify.sorts.count
 
 		end
 
@@ -105,6 +107,7 @@ describe Querify::Sortable do
 
 			Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
 			assert_equal @descending, Post.sortable.to_a
+			assert_equal 1, Querify.sorts.count
 
 		end
 
@@ -114,6 +117,14 @@ describe Querify::Sortable do
 			assert_raises Querify::InvalidDirection do
 				Post.sortable!.to_a
 			end
+
+		end
+
+		it 'honors column security' do
+
+			Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
+			assert_equal @descending, Post.sortable(columns: {name: :text}, only: true).to_a
+			assert_equal 1, Querify.sorts.count
 
 		end
 
