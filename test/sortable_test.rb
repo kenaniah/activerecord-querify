@@ -40,6 +40,12 @@ describe Querify::Sortable do
 			@ascending = [@one, @four, @two, @three]
 			@descending = [@three, @two, @four, @one]
 
+			# Additional comments for multi-sorting
+			FactoryGirl.create :comment, post: @one
+			FactoryGirl.create :comment, post: @two
+
+			@multi = [@two, @one, @three, @four]
+
 		end
 
 		it 'only has 4 posts for testing' do
@@ -69,6 +75,13 @@ describe Querify::Sortable do
 
 			Querify.params = {sort: {"name" => ":desc"}}
 			assert_equal @descending, Post.sortable.to_a
+
+		end
+
+		it 'sorts multiple columns' do
+
+			Querify.params = {sort: {"num_comments" => "desc", "name" => "desc"}}
+			assert_equal @multi, Post.sortable.to_a
 
 		end
 
