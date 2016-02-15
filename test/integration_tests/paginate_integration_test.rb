@@ -1,5 +1,5 @@
 require 'test_helper'
-
+=begin
 class PaginationTest < ActionDispatch::IntegrationTest
     include TestHelper
 
@@ -164,3 +164,4 @@ class PaginationTest < ActionDispatch::IntegrationTest
     end
 
 end
+=end
