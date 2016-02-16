@@ -43,7 +43,7 @@ module Querify
 
 							# Perform column security
 							unless Querify.columns.include?(column)
-								raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
+								raise Querify::InvalidFilterColumn.new(column), "'#{column}' is not a filterable column"
 							end
 
 							# Prefix simple column names when joins are present

@@ -35,7 +35,7 @@ module Querify
 
 						# Perform column security
 						unless Querify.columns.include?(column)
-							raise Querify::InvalidSortColumn, "'#{column}' is not a sortable column"
+							raise Querify::InvalidSortColumn.new(column), "'#{column}' is not a sortable column"
 						end
 
 						# Prefix simple column names when joins are present
