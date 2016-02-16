@@ -12,15 +12,11 @@ describe Querify do
     end
 
     it 'provides a ::config method' do
-
         assert_respond_to Querify, :config
-
     end
 
     it 'provides a ::configure method' do
-
         assert_respond_to Querify, :configure
-
     end
 
     describe "configuring querify" do

@@ -1,5 +1,5 @@
 require 'test_helper'
-
+=begin
 class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
     include TestHelper
 
@@ -123,3 +123,4 @@ class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
 
 
 end
+=end
