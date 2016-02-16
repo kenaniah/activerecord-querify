@@ -51,7 +51,10 @@ module Querify
 						Querify.sorts << sort
 
 					rescue Querify::Error => err
-						raise err if throw_errors
+						if throw_errors
+							Querify.sorts = []
+							raise err
+						end
 					end
 
 				end
