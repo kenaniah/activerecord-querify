@@ -21,7 +21,7 @@ module Querify
 		Querify.having_filters = []
 
 		# Prepare the list of allowed columns
-		determine_columns! columns: columns, only: only
+		Querify.columns = determine_columns columns: columns, only: only
 
 		# Filter the query based on :where & :having from query string
 		[:where, :having].each do |filter_type|
@@ -43,7 +43,7 @@ module Querify
 
 							# Perform column security
 							unless Querify.columns.include?(column)
-								raise Querify::InvalidFilterColumn, "'#{column}' is not a filterable column"
+								raise Querify::InvalidFilterColumn.new(column), "'#{column}' is not a filterable column"
 							end
 
 							# Prefix simple column names when joins are present

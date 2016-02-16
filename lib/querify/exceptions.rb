@@ -13,9 +13,15 @@ module Querify
 	class InvalidDirection < Error; end
 
 	# Thrown when in invalid column is passed
-	class InvalidColumn < Error; end
-	class InvalidSortColumn < InvalidColumn; end;
-	class InvalidFilterColumn < InvalidColumn; end;
+	class InvalidColumn < Error
+		attr_reader :column
+		def initialize column
+			super
+			@column = column
+		end
+	end
+	class InvalidSortColumn < InvalidColumn; end
+	class InvalidFilterColumn < InvalidColumn; end
 
 	# Thrown when an unrecognized type is passed for a column
 	class InvalidColumnType < Error; end

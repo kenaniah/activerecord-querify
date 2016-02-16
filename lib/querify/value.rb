@@ -91,7 +91,7 @@ module Querify
 
 				# Perform column security
 				unless Querify.columns.include?(column)
-					raise Querify::InvalidColumn, "'#{column}' is not an available column"
+					raise Querify::InvalidColumn.new(column), "'#{column}' is not an available column"
 				end
 
 				# Prefix simple column names when joins are present

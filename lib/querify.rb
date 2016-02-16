@@ -54,7 +54,7 @@ module Querify
 	end
 
 	# Determines the columns available for a query
-	protected def determine_columns! columns: {}, only: false
+	protected def determine_columns columns: {}, only: false
 
 		columns = columns.stringify_keys
 		unless only
@@ -66,7 +66,8 @@ module Querify
 			raise Querify::InvalidColumnType, ":#{type} is not a known column type for column '#{name}'" unless Value::TYPES.include? type.to_sym
 		end
 
-		Querify.columns = columns
+		# Return it
+		columns
 
 	end
 
