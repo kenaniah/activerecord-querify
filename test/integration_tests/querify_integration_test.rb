@@ -1,20 +1,12 @@
 require 'test_helper'
-=begin
 class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
-    include TestHelper
-
-    def setup
-        setup_data
-    end
-
-    def teardown
-        teardown_data
-    end
-
+    
 
 	test 'it returns greater than' do
 
 		get '/posts?where[name][gt]=aaa'
+
+        binding.pry
 		assert_equal jsonify.length, Post.where("name > ?",'aaa').length
 
 	end
@@ -123,4 +115,3 @@ class QuerifyIntegrationTest < ActionDispatch::IntegrationTest
 
 
 end
-=end

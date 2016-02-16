@@ -79,7 +79,7 @@ describe Querify::Sortable do
 		end
 
 		it 'sorts multiple columns' do
-
+			# What is comments count? It does not seem like a column.
 			Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
 			assert_equal @multi, Post.sortable.to_a
 			assert_equal 2, Querify.sorts.count
