@@ -1,13 +1,13 @@
 require 'test_helper'
 
-describe Querify::Filterable do
+describe Querify do
 
     before do
         truncate_db
     end
 
     it 'is a module' do
-        assert_kind_of Module, Filterable
+        assert_kind_of Module, Querify
     end
 
     it 'has access to the test dummy model' do
