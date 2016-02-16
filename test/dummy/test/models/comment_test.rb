@@ -1,5 +1,3 @@
-require 'test_helper'
-
 class CommentTest < ActiveSupport::TestCase
 
   test "comment is associated with a post" do

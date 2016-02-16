@@ -21,7 +21,7 @@ module Querify
 		Querify.having_filters = []
 
 		# Prepare the list of allowed columns
-		determine_columns! columns: columns, only: only
+		Querify.columns = determine_columns columns: columns, only: only
 
 		# Filter the query based on :where & :having from query string
 		[:where, :having].each do |filter_type|

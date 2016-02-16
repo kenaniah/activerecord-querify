@@ -1,5 +1,3 @@
-require 'test_helper'
-
 class PostTest < ActiveSupport::TestCase
 
   test "post has an author" do
@@ -7,7 +5,7 @@ class PostTest < ActiveSupport::TestCase
       post = FactoryGirl.create(:post)
 
       assert_not_nil post.author
-      
+
   end
 
 end
