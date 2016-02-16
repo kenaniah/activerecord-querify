@@ -2,14 +2,14 @@ class AuthorsController < ApplicationController
 
 	def index
 		render json:
-			Author.sortable.paginate.querify
+			Author.sortable.paginate.filterable
 
 	end
 
 
 	def show
 		render json:
-			Author.where(id: params[:id]).sortable.paginate.querify
+			Author.where(id: params[:id]).sortable.paginate.filterable
 	end
 
 

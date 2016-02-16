@@ -2,14 +2,14 @@ class PostsController < ApplicationController
 
 	def index
 		render json:
-			Post.sortable.paginate.querify
+			Post.sortable.paginate.filterable
 
 	end
 
 
 	def show
 		render json:
-			Post.find(params[:id]).sortable.paginate.querify
+			Post.find(params[:id]).sortable.paginate.filterable
 	end
 
 
