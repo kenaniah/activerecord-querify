@@ -33,30 +33,30 @@ def truncate_db
 	Comment.destroy_all
 end
 
-module TestHelper
-
-    def configure_querify
-        Querify.config.per_page = 20
-        Querify.config.min_per_page = 10
-        Querify.config.max_per_page = 50
-    end
-
-    def clear_params
-        Querify.params.clear
-    end
-
-    def jsonify
-        return json = JSON.parse(response.body)
-    end
-
-    def setup_data
-        100.times do
-            FactoryGirl.create(:post)
-        end
-
-        30.times do
-            FactoryGirl.create(:comment)
-        end
-    end
-
-end
+# module TestHelper
+#
+#     def configure_querify
+#         Querify.config.per_page = 20
+#         Querify.config.min_per_page = 10
+#         Querify.config.max_per_page = 50
+#     end
+#
+#     def clear_params
+#         Querify.params.clear
+#     end
+#
+#     def jsonify
+#         return json = JSON.parse(response.body)
+#     end
+#
+#     def setup_data
+#         100.times do
+#             FactoryGirl.create(:post)
+#         end
+#
+#         30.times do
+#             FactoryGirl.create(:comment)
+#         end
+#     end
+#
+# end
