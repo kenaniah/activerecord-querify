@@ -1,23 +1,31 @@
 require 'test_helper'
 
-describe Querify do
+describe Querify::Filterable do
 
-    # Reset the config before each "it" spec test
     before do
         truncate_db
     end
 
     it 'is a module' do
-        assert_kind_of Module, Querify
+        assert_kind_of Module, Filterable
     end
 
-    it 'provides a ::config method' do
-        assert_respond_to Querify, :config
-    end
+    it 'has access to the test dummy model' do
+		assert Post
+	end
 
-    it 'provides a ::configure method' do
-        assert_respond_to Querify, :configure
-    end
+	it 'can be called on AR models' do
+		assert_respond_to Post, :filterable
+	end
+
+	it 'can be called on AR relations' do
+		FactoryGirl.create :post
+		assert_respond_to Post.first.comments, :filterable
+	end
+
+	it 'can be called on AR collection proxies' do
+		assert_respond_to Post.all, :filterable
+	end
 
     # Set up before tests for filterable
 
