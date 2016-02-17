@@ -58,7 +58,7 @@ describe Querify do
 
             it 'returns empty Querify.where and Querify.having arrays' do
                 Querify.params = {:where => {}}
-                q = Post.filterable
+                Post.filterable
                 assert_equal [], Querify.where_filters
                 assert_equal [], Querify.having_filters
             end
@@ -143,40 +143,75 @@ describe Querify do
 
             end
 
-            # it 'works with :having instead of :where in params' do
-            #     Querify.params = {:having=>{"name"=>{"gteq"=>"C. Third post"}}}
-            #     assert_equal 2, Post.filterable.count
-            # end
-            #
-            # it 'ignores a group_by errors' do
-            # end
-            #
-            # it 'performs column security if only:true' do
-            # end
-            #
-            # it 'ignores bad operator names' do
-            # end
-            #
-            # it 'ignores bad column names' do
-            # end
-            #
-            # it 'returns Querify.where and Querify.having arrays with the correct results' do
-            #     # how to do having here?
-            #     Querify.params = {:where => {"name"=>{"lt"=>"B. Second post"}}, :having => {...}}
-            #     assert_not_empty Querify.where_filters
-            #     assert_not_empty Querify.having_filters
-            # end
+            it 'filters with group_by' do
+
+                # Create some posts to enhance grouping
+                FactoryGirl.create(:post, author: Author.first)
+                FactoryGirl.create(:post, author: Author.first)
+                FactoryGirl.create(:post, author: Author.second)
+
+                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+
+                p = Post.group(:author_id).filterable
+
+                # p = {[author_id, number_posts], [author_id, number_posts]}
+                assert_equal 3, p.count.length
+
+                # Ensure first author has 3 posts, second has 2, last has 1
+                assert_equal [3,2,1], p.count.values
+
+
+            end
+
+            it 'filters with group_by and having' do
+
+                # Create some posts to enhance grouping
+                FactoryGirl.create(:post, name: "E. Fifth post")
+                FactoryGirl.create(:post, name: "F. Sixth post")
+                FactoryGirl.create(:post, name: "G. Seventh post")
+
+                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+
+                p = Post.group(:author_id).having("name > ?", "A. First post").filterable
+
+                # p = {[author_id, number_posts], [author_id, number_posts]... }
+
+                # There should be 5 authors returned
+                assert_equal 5, p.count.length
+
+                # Each author should have one post
+                assert_equal [1,1,1,1,1], p.count.values
+
+            end
+
+            it 'ignores bad operator names' do
+                Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
+
+                # Should not raise error
+                Post.filterable
+            end
+
+            it 'ignores having without group_by errors' do
+
+                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+
+                # Should not raise error
+                Post.having("name > ?", "A. First post").filterable
+
+            end
+
+            it 'ignores bad column names' do
+
+                Querify.params = {:where=>{"elephant"=>{"isnot"=>"C. Third post"}}}
+
+                # Should not raise error
+                Post.filterable
+
+            end
 
         end
 
         describe 'two filterable parameters' do
-
-            # it 'returns Querify.where and Querify.having arrays with the correct results' do
-            #     # how to do having here?
-            #     Querify.params = {:where => {"name"=>{"gt"=>"A. First post"},"name"=>{"lt"=>"C. Third post"} }, :having => {...}}
-            #     assert_not_empty Querify.where_filters
-            #     assert_not_empty Querify.having_filters
-            # end
 
         end
 
@@ -214,6 +249,19 @@ describe Querify do
             #
             # it '#filterable! errors on bad group_by' do
             # end
+
+            # Enable when switch to pg from sqlite3 
+
+            # it '#filterable! errors on :having without :group_by' do
+            #
+            #     Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+            #
+            #     assert_raises.... do
+            #         p = Post.having("name > ?", "A. First post").filterable!
+            #     end
+            #
+            # end
+
 
         end
 
