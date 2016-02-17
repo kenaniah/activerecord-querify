@@ -184,6 +184,19 @@ describe Querify do
 
             end
 
+            # it 'sorts using joins' do
+            #
+            #     FactoryGirl.create(:post, author: Author.first)
+            #
+            #     Querify.params = {:where=>{"name"=>{"is"=>"A. First post"}}}
+            #     p = Post.joins(:comments).filterable
+            #     binding.pry
+            #     # Query should return one result because only two posts have comments and one is rejected by the query
+            #     assert_equal 1, p.length
+            #
+            #
+            # end
+
             it 'ignores bad operator names' do
                 Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
 
@@ -212,6 +225,16 @@ describe Querify do
         end
 
         describe 'two filterable parameters' do
+
+            it 'works with two filterable parameters' do
+
+                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
+
+                p = Post.filterable
+
+                assert_equal 2, p.length
+            end
+
 
         end
 
@@ -244,19 +267,13 @@ describe Querify do
 
             end
 
-            # it '#filterable! errors on bad joins_values' do
-            # end
-            #
-            # it '#filterable! errors on bad group_by' do
-            # end
-
-            # Enable when switch to pg from sqlite3 
+            # Enable when switch to pg from sqlite3
 
             # it '#filterable! errors on :having without :group_by' do
             #
             #     Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
             #
-            #     assert_raises.... do
+            #     assert_raises Querify::QueryNotYetGrouped do
             #         p = Post.having("name > ?", "A. First post").filterable!
             #     end
             #

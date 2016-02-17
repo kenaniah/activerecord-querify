@@ -41,7 +41,7 @@ module Querify
 						# Prefix simple column names when joins are present
 						if defined?(self.joins_values) && !column.include?(".")
 							column = self.table_name + "." + column
-						end
+e						end
 
 						# Sort the query
 						sort = Querify::Sort.new(column, direction)
