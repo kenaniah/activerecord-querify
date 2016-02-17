@@ -97,9 +97,11 @@ describe Querify::Sortable do
 
 			end
 
+			# Enable these tests when database is pg, not sqlite3
+
 			# it 'sorts by ascending nulls first' do
 			# 	Post.first.update(name: nil)
-			# 	Querify.params = {sort: {"name" => ":ascnl"}}
+			# 	Querify.params = {sort: {"name" => :ascnf}}
 			# 	p = Post.sortable.to_a
 			#
 			# 	assert_nil p[0].name
@@ -108,12 +110,31 @@ describe Querify::Sortable do
 			# end
 			#
 			# it 'sorts by ascending nulls last' do
+			# 	Post.first.update(name: nil)
+			# 	Querify.params = {sort: {"name" => :ascnl}}
+			# 	p = Post.sortable.to_a
+			#
+			# 	assert_nil p[3].name
+			# 	assert p[1].name < p[2].name
 			# end
 			#
-			# it 'sorts by ascending descending nulls first' do
+			# it 'sorts by descending nulls first' do
+			# 	Post.first.update(name: nil)
+			# 	Querify.params = {sort: {"name" => :descnf}}
+			# 	p = Post.sortable.to_a
+			#
+			# 	assert_nil p[0].name
+			# 	assert p[1].name > p[2].name
+			#
 			# end
 			#
-			# it 'sorts by ascending nulls last' do
+			# it 'sorts by descending nulls last' do
+			# 	Post.first.update(name: nil)
+			# 	Querify.params = {sort: {"name" => :descnl}}
+			# 	p = Post.sortable.to_a
+			#
+			# 	assert_nil p[3].name
+			# 	assert p[1].name > p[2].name
 			# end
 
 			it 'sorts multiple columns' do
@@ -156,9 +177,14 @@ describe Querify::Sortable do
 
 			end
 
-			it 'prefixes sorts with the table name when given joins values' do
+			it 'sorts using joins' do
 
-				# Need to understand joins values
+				Querify.params = {sort: {"id" => "asc"}}
+				p = Post.joins(:comments).sortable
+
+				# Query should only return two results because only two posts have comments
+				assert_equal 2, p.length
+				assert p[0].id < p[1].id
 
 			end
 

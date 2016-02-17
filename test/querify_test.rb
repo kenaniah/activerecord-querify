@@ -58,8 +58,9 @@ describe Querify do
 
             it 'returns empty Querify.where and Querify.having arrays' do
                 Querify.params = {:where => {}}
-                assert_empty Querify.where_filters
-                assert_empty Querify.having_filters
+                q = Post.filterable
+                assert_equal [], Querify.where_filters
+                assert_equal [], Querify.having_filters
             end
 
 
@@ -112,6 +113,8 @@ describe Querify do
                 assert_equal 1, Post.filterable.count
             end
 
+            # Enable when database switched to pg from sqlite3
+
             # it 'returns case-sensitive ilike' do
             #     FactoryGirl.create :post, name: "b. Lower-cased version of second post"
             #     Querify.params = {:where=>{"name"=>{"ilike"=>"B."}}}
@@ -126,6 +129,18 @@ describe Querify do
             it 'returns not in' do
                 Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
                 assert_equal 2, Post.filterable.count
+            end
+
+            it 'ignores errors on column security violations' do
+                Post.filterable(columns: {author_id: :integer}, only: true)
+                Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
+
+                # No error should be raised because #filterable ignores errors
+                p = Post.all.filterable
+
+                # Result should not conform to the banned params
+                assert_equal 4, p.length
+
             end
 
             # it 'works with :having instead of :where in params' do
@@ -143,9 +158,6 @@ describe Querify do
             # end
             #
             # it 'ignores bad column names' do
-            # end
-            #
-            # it 'ignores joins_values errors' do
             # end
             #
             # it 'returns Querify.where and Querify.having arrays with the correct results' do
@@ -185,9 +197,18 @@ describe Querify do
     			end
             end
 
-            # it '#filterable! errors on column security error' do
-            # end
-            #
+            it '#filterable! errors on column security error' do
+
+                one_id = Post.second.id
+                another_id = Post.last.id
+
+                Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
+                assert_raises Querify::InvalidFilterColumn do
+                    Post.all.filterable!(columns: {author_id: :integer}, only: true)
+                end
+
+            end
+
             # it '#filterable! errors on bad joins_values' do
             # end
             #
