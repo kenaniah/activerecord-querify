@@ -66,7 +66,6 @@ module Querify
 
 		# Determines the max per page option (options overrides params)
 		def determine_max options
-
 			max = options[:max_per_page]
 			# Treat 0 the same as nil
 			max = nil if max == 0

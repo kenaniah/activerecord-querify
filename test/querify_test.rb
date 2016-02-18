@@ -63,14 +63,13 @@ describe Querify do
                 assert_equal [], Querify.having_filters
             end
 
-
         end
 
         describe 'one filterable parameter' do
 
             it 'returns greater than' do
-                Querify.params = {:where=>{"name"=>{"lt"=>"Z. Twenty-sixth post"}}}
-                assert_equal 4, Post.filterable.count
+                Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
+                assert_equal 3, Post.filterable.count
             end
 
             it 'returns greater than or equal to' do
@@ -116,7 +115,7 @@ describe Querify do
             # Enable when database switched to pg from sqlite3
 
             # it 'returns case-sensitive ilike' do
-            #     FactoryGirl.create :post, name: "b. Lower-cased version of second post"
+            #     FactoryGirl.create :post, name: "b. Lower-cased similar to second post"
             #     Querify.params = {:where=>{"name"=>{"ilike"=>"B."}}}
             #     assert_equal 1, Post.filterable.count
             # end
@@ -143,6 +142,21 @@ describe Querify do
 
             end
 
+
+            # TODO: Fix this test
+            # 
+            # it 'filters using joins' do
+            #
+            #     FactoryGirl.create(:post, author: Author.first)
+            #
+            #     Querify.params = {:where=>{"name"=>{"is"=>"A. First post"}}}
+            #     p = Post.joins(:comments).filterable
+            #
+            #     # Query should return one result because only two posts have comments and one is rejected by the query
+            #     assert_equal 1, p.length
+            #
+            # end
+
             it 'filters with group_by' do
 
                 # Create some posts to enhance grouping
@@ -163,7 +177,7 @@ describe Querify do
 
             end
 
-            it 'filters with group_by and having' do
+            it 'filters with :group_by and :having' do
 
                 # Create some posts to enhance grouping
                 FactoryGirl.create(:post, name: "E. Fifth post")
@@ -183,19 +197,6 @@ describe Querify do
                 assert_equal [1,1,1,1,1], p.count.values
 
             end
-
-            # it 'sorts using joins' do
-            #
-            #     FactoryGirl.create(:post, author: Author.first)
-            #
-            #     Querify.params = {:where=>{"name"=>{"is"=>"A. First post"}}}
-            #     p = Post.joins(:comments).filterable
-            #     binding.pry
-            #     # Query should return one result because only two posts have comments and one is rejected by the query
-            #     assert_equal 1, p.length
-            #
-            #
-            # end
 
             it 'ignores bad operator names' do
                 Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
