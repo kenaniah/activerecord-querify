@@ -185,7 +185,7 @@ describe Querify::Paginate do
 
 			it 'uses params[:per_page] no matter what other option given' do
 
-				Querify.params = {:per_page => 4}
+				Querify.params = {:per_page => 2}
 
 				p = Post.paginate(per_page: 4)
 				assert_equal 4, p.length

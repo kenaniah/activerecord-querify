@@ -219,6 +219,17 @@ describe Querify do
 
             end
 
+            it 'can use filterable, sortable, and paginate all at once' do
+
+                Querify.config.min_per_page = 1
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :sort=>{"name" => :asc}, :per_page=>2}
+                p = Post.sortable.filterable.paginate
+
+                assert_equal 2, p.length
+                assert p[0].name < p[1].name
+                assert p[0].name != "C. Third post" && p[1].name != "C. Third post"
+            end
+
         end
 
         describe 'two filterable parameters' do
@@ -278,4 +289,6 @@ describe Querify do
         end
 
     end
+
+
 end

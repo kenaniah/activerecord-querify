@@ -37,7 +37,6 @@ module Querify
 			per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
 			per_page = [per_page, options[:min_per_page]].max
 
-
 			# Set the pagination meta headers to be returned with the HTTP response
 
 			Querify.headers["X-Per-Page"] = per_page.to_s
