@@ -73,7 +73,7 @@ describe Querify::Sortable do
 
 			it 'adds sorts to the sorts array when given a single sort' do
 
-				Querify.params = {sort: {"comments_count" => "desc"}}
+				Querify.params = {sort: {"comments_count" => ":desc"}}
 				Post.sortable
 				assert Querify.sorts[0].column = "comments_count" && Querify.sorts[0].direction = "DESC"
 
@@ -118,47 +118,43 @@ describe Querify::Sortable do
 			#
 			# end
 
+			it 'sorts by ascending nulls first' do
+				Post.first.update(name: nil)
+				Querify.params = {sort: {"name" => :ascnf}}
+				p = Post.sortable.to_a
 
-			# Enable these tests when database is pg, not sqlite3
+				assert_nil p[0].name
+				assert p[1].name < p[2].name
 
-			# it 'sorts by ascending nulls first' do
-			# 	Post.first.update(name: nil)
-			# 	Querify.params = {sort: {"name" => :ascnf}}
-			# 	p = Post.sortable.to_a
-			#
-			# 	assert_nil p[0].name
-			# 	assert p[1].name < p[2].name
-			#
-			# end
-			#
-			# it 'sorts by ascending nulls last' do
-			# 	Post.first.update(name: nil)
-			# 	Querify.params = {sort: {"name" => :ascnl}}
-			# 	p = Post.sortable.to_a
-			#
-			# 	assert_nil p[3].name
-			# 	assert p[1].name < p[2].name
-			# end
-			#
-			# it 'sorts by descending nulls first' do
-			# 	Post.first.update(name: nil)
-			# 	Querify.params = {sort: {"name" => :descnf}}
-			# 	p = Post.sortable.to_a
-			#
-			# 	assert_nil p[0].name
-			# 	assert p[1].name > p[2].name
-			#
-			# end
-			#
-			# it 'sorts by descending nulls last' do
-			# 	Post.first.update(name: nil)
-			# 	Querify.params = {sort: {"name" => :descnl}}
-			# 	p = Post.sortable.to_a
-			#
-			# 	assert_nil p[3].name
-			# 	assert p[1].name > p[2].name
-			# end
+			end
 
+			it 'sorts by ascending nulls last' do
+				Post.first.update(name: nil)
+				Querify.params = {sort: {"name" => :ascnl}}
+				p = Post.sortable.to_a
+
+				assert_nil p[3].name
+				assert p[1].name < p[2].name
+			end
+
+			it 'sorts by descending nulls first' do
+				Post.first.update(name: nil)
+				Querify.params = {sort: {"name" => :descnf}}
+				p = Post.sortable.to_a
+
+				assert_nil p[0].name
+				assert p[1].name > p[2].name
+
+			end
+
+			it 'sorts by descending nulls last' do
+				Post.first.update(name: nil)
+				Querify.params = {sort: {"name" => :descnl}}
+				p = Post.sortable.to_a
+
+				assert_nil p[3].name
+				assert p[1].name > p[2].name
+			end
 
 			it '#sortable ignores non-available columns' do
 
@@ -190,8 +186,13 @@ describe Querify::Sortable do
 
 			it 'sorts multiple columns' do
 
-				Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
-				assert_equal @multi, Post.sortable.to_a
+				Querify.params = {sort: {"name" => :asc}}
+				assert_equal @ascending, Post.sortable.to_a
+
+				Querify.params = {sort: {"comments_count" => :desc, "name" => :desc}}
+				p = Post.sortable
+				assert p[0].comments_count.to_i <=  p[1].comments_count.to_i && p[1].comments_count.to_i <= p[2].comments_count.to_i &&  p[2].comments_count.to_i <= p[3].comments_count.to_i
+
 				assert_equal 2, Querify.sorts.count
 
 			end

@@ -48,6 +48,8 @@ describe Querify do
 
             @ascending = [@one, @four, @two, @three]
 			@descending = [@three, @two, @four, @one]
+
+            Querify.params.clear
         end
 
         it 'only has 4 posts for testing' do
@@ -97,28 +99,25 @@ describe Querify do
                 assert_equal 3, Post.filterable.count
             end
 
-            it 'returns is' do
-                Querify.params = {:where=>{"name"=>{"is"=>"B. Second post"}}}
-                assert_equal 1, Post.filterable.count
-            end
-
-            it 'returns is not' do
-                Querify.params = {:where=>{"name"=>{"isnot"=>"B. Second post"}}}
-                assert_equal 3, Post.filterable.count
-            end
-
-            it 'returns like' do
-                Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
-                assert_equal 1, Post.filterable.count
-            end
-
-            # Enable when database switched to pg from sqlite3
-
-            # it 'returns case-sensitive ilike' do
-            #     FactoryGirl.create :post, name: "b. Lower-cased similar to second post"
-            #     Querify.params = {:where=>{"name"=>{"ilike"=>"B."}}}
+            # it 'returns is' do
+            #     Querify.params = {:where=>{"name"=>{"is"=>"B. Second post"}}}
             #     assert_equal 1, Post.filterable.count
             # end
+
+            # it 'returns is not' do
+            #     Querify.params = {:where=>{"name"=>{"isnot"=>"B. Second post"}}}
+            #     assert_equal 3, Post.filterable.count
+            # end
+
+            it 'returns case insensitive like' do
+                Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
+                assert_equal 1, Post.filterable.count
+            end
+
+            it 'returns case sensitive like' do
+                Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
+                assert_equal 0, Post.filterable.count
+            end
 
             it 'returns in' do
                 Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
@@ -144,15 +143,17 @@ describe Querify do
 
 
             # TODO: Fix this test
-            # 
+
             # it 'filters using joins' do
             #
-            #     FactoryGirl.create(:post, author: Author.first)
+            #     # Ensure this post exists
+            #     post = Post.where(name: "A. First post")
+            #     assert post[0].comments.length > 0
             #
-            #     Querify.params = {:where=>{"name"=>{"is"=>"A. First post"}}}
+            #     # Try to find the query with params and joins
+            #     Querify.params = {:where=>{"name"=>{"eq"=>"A. First post"}}}
             #     p = Post.joins(:comments).filterable
             #
-            #     # Query should return one result because only two posts have comments and one is rejected by the query
             #     assert_equal 1, p.length
             #
             # end
@@ -164,37 +165,30 @@ describe Querify do
                 FactoryGirl.create(:post, author: Author.first)
                 FactoryGirl.create(:post, author: Author.second)
 
-                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
-
-                p = Post.group(:author_id).filterable
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
                 # p = {[author_id, number_posts], [author_id, number_posts]}
+                p = Post.group(:author_id).filterable
+
                 assert_equal 3, p.count.length
 
-                # Ensure first author has 3 posts, second has 2, last has 1
-                assert_equal [3,2,1], p.count.values
-
+                # Ensure an author with 3 posts, an author with 2 posts, and an author with 1 post
+                assert p.count.values.include?(1) && p.count.values.include?(2) && p.count.values.include?(3)
 
             end
 
             it 'filters with :group_by and :having' do
 
-                # Create some posts to enhance grouping
-                FactoryGirl.create(:post, name: "E. Fifth post")
-                FactoryGirl.create(:post, name: "F. Sixth post")
-                FactoryGirl.create(:post, name: "G. Seventh post")
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
-                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
-
-                p = Post.group(:author_id).having("name > ?", "A. First post").filterable
-
+                p = Post.group(:name).having("name > ?", "A. First post").filterable
                 # p = {[author_id, number_posts], [author_id, number_posts]... }
 
                 # There should be 5 authors returned
-                assert_equal 5, p.count.length
+                assert_equal 2, p.count.length
 
                 # Each author should have one post
-                assert_equal [1,1,1,1,1], p.count.values
+                assert_equal [1,1], p.count.values
 
             end
 
@@ -207,7 +201,7 @@ describe Querify do
 
             it 'ignores having without group_by errors' do
 
-                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
                 # Should not raise error
                 Post.having("name > ?", "A. First post").filterable
@@ -216,7 +210,7 @@ describe Querify do
 
             it 'ignores bad column names' do
 
-                Querify.params = {:where=>{"elephant"=>{"isnot"=>"C. Third post"}}}
+                Querify.params = {:where=>{"elephant"=>{"neq"=>"C. Third post"}}}
 
                 # Should not raise error
                 Post.filterable
@@ -229,7 +223,7 @@ describe Querify do
 
             it 'works with two filterable parameters' do
 
-                Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
 
                 p = Post.filterable
 
@@ -268,14 +262,12 @@ describe Querify do
 
             end
 
-            # Enable when switch to pg from sqlite3
-
             # it '#filterable! errors on :having without :group_by' do
             #
-            #     Querify.params = {:where=>{"name"=>{"isnot"=>"C. Third post"}}}
+            #     Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
             #
             #     assert_raises Querify::QueryNotYetGrouped do
-            #         p = Post.having("name > ?", "A. First post").filterable!
+            #         Post.having("name > ?", "A. First post").filterable!
             #     end
             #
             # end
