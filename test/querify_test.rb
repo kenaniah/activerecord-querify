@@ -98,14 +98,16 @@ describe Querify do
                 Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
                 assert_equal 3, Post.filterable.count
             end
-
+            #
             # it 'returns is' do
-            #     Querify.params = {:where=>{"name"=>{"is"=>"B. Second post"}}}
+            #     FactoryGirl.create(:post, name: nil)
+            #     Querify.params = {:where=>{"name"=>{"is"=>"null"}}}
             #     assert_equal 1, Post.filterable.count
             # end
-
+            #
             # it 'returns is not' do
-            #     Querify.params = {:where=>{"name"=>{"isnot"=>"B. Second post"}}}
+            #     FactoryGirl.create(:post, name: nil)
+            #     Querify.params = {:where=>{"name"=>{"isnot"=>"null"}}}
             #     assert_equal 3, Post.filterable.count
             # end
 
