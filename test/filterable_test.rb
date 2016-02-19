@@ -198,11 +198,6 @@ describe Querify do
 
             it 'filters with group_by' do
 
-                # Create some posts to enhance grouping
-                FactoryGirl.create(:post, author: Author.first)
-                FactoryGirl.create(:post, author: Author.first)
-                FactoryGirl.create(:post, author: Author.second)
-
                 Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
                 # p = {[author_id, number_posts], [author_id, number_posts]}
@@ -210,15 +205,11 @@ describe Querify do
 
                 assert_equal 3, p.count.length
 
-                # Ensure an author with 3 posts, an author with 2 posts, and an author with 1 post
-                assert p.count.values.include?(1) && p.count.values.include?(2) && p.count.values.include?(3)
+                assert p.count.values.include?(1)
 
             end
 
             it 'filters with :group_by and :having' do
-
-                FactoryGirl.create(:post, author: Author.second, name: "A. First post")
-                FactoryGirl.create(:post, author: Author.second, name: "B. Second post")
 
                 Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
 
