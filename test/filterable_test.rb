@@ -98,18 +98,18 @@ describe Querify do
                 Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
                 assert_equal 3, Post.filterable.count
             end
-             
-            # it 'returns is' do
-            #     FactoryGirl.create(:post, name: nil)
-            #     Querify.params = {:where=>{"name"=>{"is"=>"asdf"}}}
-            #     assert_equal 1, Post.filterable.count
-            # end
 
-            # it 'returns is not' do
-            #     FactoryGirl.create(:post, name: nil)
-            #     Querify.params = {:where=>{"name"=>{"isnot"=>"null"}}}
-            #     assert_equal 3, Post.filterable.count
-            # end
+            it 'returns is' do
+                FactoryGirl.create(:post, name: nil)
+                Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
+                assert_equal 1, Post.filterable.count
+            end
+
+            it 'returns is not' do
+                FactoryGirl.create(:post, name: nil)
+                Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
+                assert_equal 4, Post.filterable.count
+            end
 
             it 'returns case insensitive like' do
                 Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
@@ -146,15 +146,14 @@ describe Querify do
 
             # TODO: Fix this test
 
-            # it 'filters using joins' do
-            #
-            #     FactoryGirl.create(:comment, post: Post.last, author: Author.first)
-            #
-            #     # Try to find the query with params and joins
-            #     Querify.params = {where:{"comment.id"=>{"eq"=>1}}}
-            #     p = Post.joins(:comments).filterable
-            #
-            # end
+            it 'filters using joins' do
+
+                FactoryGirl.create(:comment, post: Post.last, author: Author.first)
+
+                Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
+                p = Post.joins(:comments).filterable
+                assert_equal 3, p.length
+            end
 
             it 'filters with group_by' do
 
@@ -180,16 +179,12 @@ describe Querify do
                 FactoryGirl.create(:post, author: Author.second, name: "A. First post")
                 FactoryGirl.create(:post, author: Author.second, name: "B. Second post")
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
+                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
 
-                # Return posts grouped by author where the author_id is greater than the first author's id
-                p = Post.group(:author_id).having("author_id > ?", Author.first.id).filterable
+                p = Post.group(:author_id).filterable
 
-                # There should be 2 authors returned
-                assert_equal 2, p.count.length
-
-                # Each author should have one post
-                assert p.count.values.include?(1) && p.count.values.include?(3)
+                # There should be no authors returned
+                assert_equal 0, p.count.length
 
             end
 
@@ -204,10 +199,10 @@ describe Querify do
 
             it 'ignores having without group_by errors' do
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
+                Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
 
                 # Should not raise error
-                Post.having("name > ?", "A. First post").filterable
+                Post.filterable
 
             end
 
@@ -280,16 +275,16 @@ describe Querify do
 
             end
 
-            # it '#filterable! errors on :having without :group_by' do
-            #
-            #     Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
-            #     puts "Having without grouped by"
-            #
-            #     assert_raises Querify::QueryNotYetGrouped do
-            #         Post.having("author_id > ?", "1").filterable!
-            #     end
-            #
-            # end
+            it '#filterable! errors on :having without :group_by' do
+
+                Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
+                puts "Having without grouped by"
+
+                assert_raises Querify::QueryNotYetGrouped do
+                    Post.having("author_id > ?", "1").filterable!
+                end
+
+            end
 
 
         end

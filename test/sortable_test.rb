@@ -105,16 +105,16 @@ describe Querify::Sortable do
 
 			end
 
-			# it 'sorts using joins' do
-			#
-			# 	Querify.params = {sort: {"id" => "asc"}}
-			# 	p = Post.joins(:comments).sortable
-			#
-			# 	# Query should only return two results because only two posts have comments
-			# 	assert_equal 2, p.length
-			# 	assert p[0].id < p[1].id
-			#
-			# end
+			it 'sorts using joins' do
+
+				Querify.params = {sort: {":comments.id" => :asc}}
+				p = Post.joins(:comments).sortable
+
+				# Query should only return two results because only two posts have comments
+				assert_equal 2, p.length
+				assert p[0].id < p[1].id
+
+			end
 
 			it 'sorts by ascending nulls first' do
 				Post.first.update(name: nil)
