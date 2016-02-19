@@ -105,8 +105,6 @@ describe Querify::Sortable do
 
 			end
 
-			# TODO: Fix this test
-			#
 			# it 'sorts using joins' do
 			#
 			# 	Querify.params = {sort: {"id" => "asc"}}

@@ -188,7 +188,9 @@ describe Querify::Paginate do
 				Querify.params = {:per_page => 2}
 
 				p = Post.paginate(per_page: 4)
-				assert_equal 4, p.length
+
+				# Params should override the manually set option 
+				assert_equal 2, p.length
 
 			end
 

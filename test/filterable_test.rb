@@ -98,13 +98,13 @@ describe Querify do
                 Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
                 assert_equal 3, Post.filterable.count
             end
-            #
+             
             # it 'returns is' do
             #     FactoryGirl.create(:post, name: nil)
-            #     Querify.params = {:where=>{"name"=>{"is"=>"null"}}}
+            #     Querify.params = {:where=>{"name"=>{"is"=>"asdf"}}}
             #     assert_equal 1, Post.filterable.count
             # end
-            #
+
             # it 'returns is not' do
             #     FactoryGirl.create(:post, name: nil)
             #     Querify.params = {:where=>{"name"=>{"isnot"=>"null"}}}
@@ -148,15 +148,11 @@ describe Querify do
 
             # it 'filters using joins' do
             #
-            #     # Ensure this post exists
-            #     post = Post.where(name: "A. First post")
-            #     assert post[0].comments.length > 0
+            #     FactoryGirl.create(:comment, post: Post.last, author: Author.first)
             #
             #     # Try to find the query with params and joins
-            #     Querify.params = {:where=>{"name"=>{"eq"=>"A. First post"}}}
+            #     Querify.params = {where:{"comment.id"=>{"eq"=>1}}}
             #     p = Post.joins(:comments).filterable
-            #
-            #     assert_equal 1, p.length
             #
             # end
 
@@ -181,24 +177,29 @@ describe Querify do
 
             it 'filters with :group_by and :having' do
 
+                FactoryGirl.create(:post, author: Author.second, name: "A. First post")
+                FactoryGirl.create(:post, author: Author.second, name: "B. Second post")
+
                 Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
-                p = Post.group(:name).having("name > ?", "A. First post").filterable
-                # p = {[author_id, number_posts], [author_id, number_posts]... }
+                # Return posts grouped by author where the author_id is greater than the first author's id
+                p = Post.group(:author_id).having("author_id > ?", Author.first.id).filterable
 
-                # There should be 5 authors returned
+                # There should be 2 authors returned
                 assert_equal 2, p.count.length
 
                 # Each author should have one post
-                assert_equal [1,1], p.count.values
+                assert p.count.values.include?(1) && p.count.values.include?(3)
 
             end
 
             it 'ignores bad operator names' do
+
                 Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
 
                 # Should not raise error
                 Post.filterable
+
             end
 
             it 'ignores having without group_by errors' do
@@ -228,6 +229,7 @@ describe Querify do
                 assert_equal 2, p.length
                 assert p[0].name < p[1].name
                 assert p[0].name != "C. Third post" && p[1].name != "C. Third post"
+
             end
 
         end
@@ -237,12 +239,10 @@ describe Querify do
             it 'works with two filterable parameters' do
 
                 Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
-
                 p = Post.filterable
-
                 assert_equal 2, p.length
-            end
 
+            end
 
         end
 
@@ -250,16 +250,20 @@ describe Querify do
         describe '#filterable!' do
 
             it '#filterable! errors on bad operator' do
+
                 Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
                 assert_raises Querify::InvalidOperator do
     				Post.filterable!.to_a
+
     			end
             end
 
             it '#filterable! errors on bad column name' do
+
                 Querify.params = {:where=>{"asdf"=>{"gt"=>"B."}}}
                 assert_raises Querify::InvalidFilterColumn do
     				Post.filterable!.to_a
+
     			end
             end
 
@@ -271,6 +275,7 @@ describe Querify do
                 Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
                 assert_raises Querify::InvalidFilterColumn do
                     Post.all.filterable!(columns: {author_id: :integer}, only: true)
+
                 end
 
             end
@@ -278,9 +283,10 @@ describe Querify do
             # it '#filterable! errors on :having without :group_by' do
             #
             #     Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
+            #     puts "Having without grouped by"
             #
             #     assert_raises Querify::QueryNotYetGrouped do
-            #         Post.having("name > ?", "A. First post").filterable!
+            #         Post.having("author_id > ?", "1").filterable!
             #     end
             #
             # end

@@ -53,7 +53,7 @@ module Querify
 							# Filter the query
 							filter = Querify::Filter.new column, operator, value, Querify.columns[column]
 							query = query.send filter_type, *filter.to_a
-
+							
 							# Store the filter
 							Querify.send(filter_type.to_s + "_filters") << filter
 						rescue Querify::Error => err
