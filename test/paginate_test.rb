@@ -9,22 +9,30 @@ describe Querify::Paginate do
 	describe 'Paginate sanity tests' do
 
 		it 'ActiveRecord responds to #paginate' do
+
 			FactoryGirl.create(:post)
+
 			assert_respond_to Post, :paginate
 			assert_respond_to Post.all, :paginate
 			assert_respond_to Post.first.comments, :paginate
+
 		end
 
 		it 'ActiveRecord responds to #paginated?' do
+
 			FactoryGirl.create(:post)
+
 			assert_respond_to Post, :paginated?
 			assert_respond_to Post.all, :paginated?
 			assert_respond_to Post.first.comments, :paginated?
+
 		end
 
 		it 'ActiveRecord knows if the query is paginated' do
+
 			assert Post.paginate.paginated?
 			assert_equal false, Post.paginated?
+
 		end
 	end
 
@@ -71,7 +79,9 @@ describe Querify::Paginate do
 		describe 'paginate' do
 
 			it 'uses config for per_page settings if no option given in params' do
+
 				Querify.params = {}
+
 				assert_equal 3, Post.paginate.length
 
 			end
@@ -79,6 +89,7 @@ describe Querify::Paginate do
 			it 'uses options[:min_per_page] if given' do
 
 				p = Post.paginate(min_per_page: 4)
+
 				assert_equal 4, p.length
 
 			end
@@ -86,6 +97,7 @@ describe Querify::Paginate do
 			it 'uses config.min_per_page if no option[:min_per_page] given' do
 
 				p = Post.paginate
+
 				assert_equal 3, p.length
 
 			end
@@ -123,6 +135,7 @@ describe Querify::Paginate do
 			end
 
 			it 'uses the hardcoded maximum if no options provided at all' do
+
 				Querify.config.per_page = 500
 				Querify.config.max_per_page = nil
 
@@ -179,6 +192,7 @@ describe Querify::Paginate do
 			it 'uses hardcoded page 1 if neither page options given' do
 
 				p = Post.paginate
+
 				assert p[0].id == Post.first.id
 
 			end
@@ -189,7 +203,7 @@ describe Querify::Paginate do
 
 				p = Post.paginate(per_page: 4)
 
-				# Params should override the manually set option 
+				# Params should override the manually set option
 				assert_equal 2, p.length
 
 			end
@@ -197,6 +211,7 @@ describe Querify::Paginate do
 			it 'uses options[:per_page] if no params[:per_page] given' do
 
 				p = Post.paginate(per_page: 4)
+
 				assert_equal 4, p.length
 
 			end
@@ -204,6 +219,7 @@ describe Querify::Paginate do
 			it 'uses config.per_page if no preference given in params or options hash' do
 
 				p = Post.paginate
+
 				assert_equal 3, p.length
 
 			end
@@ -218,6 +234,7 @@ describe Querify::Paginate do
 				end
 
 				p = Post.paginate
+
 				assert_equal 20, p.length
 
 			end

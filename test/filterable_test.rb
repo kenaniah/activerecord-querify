@@ -53,16 +53,21 @@ describe Querify do
         end
 
         it 'only has 4 posts for testing' do
+
             assert_equal 4, Post.count
+
         end
 
         describe 'no filterable parameters' do
 
             it 'returns empty Querify.where and Querify.having arrays' do
+
                 Querify.params = {:where => {}}
                 Post.filterable
+
                 assert_equal [], Querify.where_filters
                 assert_equal [], Querify.having_filters
+
             end
 
         end
@@ -70,68 +75,105 @@ describe Querify do
         describe 'one filterable parameter' do
 
             it 'returns greater than' do
+
                 Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
+
                 assert_equal 3, Post.filterable.count
+
             end
 
             it 'returns greater than or equal to' do
+
                 Querify.params = {:where=>{"name"=>{"gteq"=>"C. Third post"}}}
+
                 assert_equal 2, Post.filterable.count
+
             end
 
             it 'returns less than' do
+
                 Querify.params = {:where=>{"name"=>{"lt"=>"B. Second post"}}}
+
                 assert_equal 1, Post.filterable.count
+
             end
 
             it 'returns less than or equal to' do
+
                 Querify.params = {:where=>{"name"=>{"lteq"=>"B. Second post"}}}
+
                 assert_equal 2, Post.filterable.count
+
             end
 
             it 'returns equal to' do
+
                 Querify.params = {:where=>{"name"=>{"eq"=>"B. Second post"}}}
+
                 assert_equal 1, Post.filterable.count
+
             end
 
             it 'returns not equal to' do
+
                 Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
+
                 assert_equal 3, Post.filterable.count
+
             end
 
             it 'returns is' do
+
                 FactoryGirl.create(:post, name: nil)
                 Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
+
                 assert_equal 1, Post.filterable.count
+
             end
 
             it 'returns is not' do
+
                 FactoryGirl.create(:post, name: nil)
                 Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
+
                 assert_equal 4, Post.filterable.count
+
             end
 
             it 'returns case insensitive like' do
+
                 Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
+
                 assert_equal 1, Post.filterable.count
+
             end
 
             it 'returns case sensitive like' do
+
                 Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
+
                 assert_equal 0, Post.filterable.count
+
             end
 
             it 'returns in' do
+
                 Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
+
                 assert_equal 2, Post.filterable.count
+
             end
 
             it 'returns not in' do
+
                 Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
+
                 assert_equal 2, Post.filterable.count
+
             end
 
             it 'ignores errors on column security violations' do
+
                 Post.filterable(columns: {author_id: :integer}, only: true)
                 Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
 
@@ -144,7 +186,6 @@ describe Querify do
             end
 
 
-            # TODO: Fix this test
 
             it 'filters using joins' do
 

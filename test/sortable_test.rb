@@ -10,24 +10,35 @@ describe Querify::Sortable do
 	describe 'Sortable module sanity tests' do
 
 		it 'is a module' do
-	        assert_kind_of Module, Querify::Sortable
-	    end
+
+			assert_kind_of Module, Querify::Sortable
+
+		end
 
 		it 'has access to the test dummy model' do
+
 			assert Post
+
 		end
 
 		it 'can be called on AR models' do
+
 			assert_respond_to Post, :sortable
+
 		end
 
 		it 'can be called on AR relations' do
+
 			FactoryGirl.create :post
+
 			assert_respond_to Post.first.comments, :sortable
+
 		end
 
 		it 'can be called on AR collection proxies' do
+
 			assert_respond_to Post.all, :sortable
+
 		end
 
 	end
@@ -54,7 +65,9 @@ describe Querify::Sortable do
 		end
 
 		it 'only has 4 posts for testing' do
+
 			assert_equal 4, Post.count
+
 		end
 
 		describe 'sorting with no params' do
@@ -63,6 +76,7 @@ describe Querify::Sortable do
 
 				Querify.params = {sort: {}}
 				Post.sortable
+
 				assert_empty Querify.sorts
 
 			end
@@ -75,6 +89,7 @@ describe Querify::Sortable do
 
 				Querify.params = {sort: {"comments_count" => ":desc"}}
 				Post.sortable
+
 				assert Querify.sorts[0].column = "comments_count" && Querify.sorts[0].direction = "DESC"
 
 			end
@@ -117,6 +132,7 @@ describe Querify::Sortable do
 			end
 
 			it 'sorts by ascending nulls first' do
+
 				Post.first.update(name: nil)
 				Querify.params = {sort: {"name" => :ascnf}}
 				p = Post.sortable.to_a
@@ -127,6 +143,7 @@ describe Querify::Sortable do
 			end
 
 			it 'sorts by ascending nulls last' do
+
 				Post.first.update(name: nil)
 				Querify.params = {sort: {"name" => :ascnl}}
 				p = Post.sortable.to_a
@@ -146,6 +163,7 @@ describe Querify::Sortable do
 			end
 
 			it 'sorts by descending nulls last' do
+
 				Post.first.update(name: nil)
 				Querify.params = {sort: {"name" => :descnl}}
 				p = Post.sortable.to_a
@@ -157,6 +175,7 @@ describe Querify::Sortable do
 			it '#sortable ignores non-available columns' do
 
 				Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+
 				assert_equal @descending, Post.sortable.to_a
 				assert_equal 1, Querify.sorts.count
 
@@ -165,6 +184,7 @@ describe Querify::Sortable do
 			it '#sortable ignores bad operators' do
 
 				Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+
 				assert_equal @descending, Post.sortable.to_a
 				assert_equal 1, Querify.sorts.count
 
@@ -173,6 +193,7 @@ describe Querify::Sortable do
 			it 'honors column security' do
 
 				Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
+
 				assert_equal @descending, Post.sortable(columns: {name: :text}, only: true).to_a
 				assert_equal 1, Querify.sorts.count
 
@@ -185,10 +206,12 @@ describe Querify::Sortable do
 			it 'sorts multiple columns' do
 
 				Querify.params = {sort: {"name" => :asc}}
+
 				assert_equal @ascending, Post.sortable.to_a
 
 				Querify.params = {sort: {"comments_count" => :desc, "name" => :desc}}
 				p = Post.sortable
+
 				assert p[0].comments_count.to_i <=  p[1].comments_count.to_i && p[1].comments_count.to_i <= p[2].comments_count.to_i &&  p[2].comments_count.to_i <= p[3].comments_count.to_i
 
 				assert_equal 2, Querify.sorts.count
@@ -202,6 +225,7 @@ describe Querify::Sortable do
 			it '#sortable! errors on non-available columns' do
 
 				Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+
 				assert_raises Querify::InvalidSortColumn do
 					Post.sortable!.to_a
 				end
@@ -211,10 +235,11 @@ describe Querify::Sortable do
 			it '#sortable! errors on bad operators' do
 
 				Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+
 				assert_raises Querify::InvalidDirection do
 					Post.sortable!.to_a
 				end
-
+				
 			end
 		end
 
