@@ -2,326 +2,326 @@ require 'test_helper'
 
 describe Querify do
 
-    before do
-        truncate_db
-    end
+	before do
+		truncate_db
+	end
 
-    describe 'Filterable sanity tests' do
+	describe 'Filterable sanity tests' do
 
-        it 'is a module' do
-            assert_kind_of Module, Querify
-        end
+		it 'is a module' do
+			assert_kind_of Module, Querify
+		end
 
-        it 'has access to the test dummy model' do
-    		assert Post
-    	end
+		it 'has access to the test dummy model' do
+			assert Post
+		end
 
-    	it 'can be called on AR models' do
-    		assert_respond_to Post, :filterable
-    	end
+		it 'can be called on AR models' do
+			assert_respond_to Post, :filterable
+		end
 
-    	it 'can be called on AR relations' do
-    		FactoryGirl.create :post
-    		assert_respond_to Post.first.comments, :filterable
-    	end
+		it 'can be called on AR relations' do
+			FactoryGirl.create :post
+			assert_respond_to Post.first.comments, :filterable
+		end
 
-    	it 'can be called on AR collection proxies' do
-    		assert_respond_to Post.all, :filterable
-    	end
-    end
+		it 'can be called on AR collection proxies' do
+			assert_respond_to Post.all, :filterable
+		end
+	end
 
 
-    # Set up before tests for filterable
+	# Set up before tests for filterable
 
-    describe 'filtering' do
+	describe 'filtering' do
 
-        before do
+		before do
 
-            @one = FactoryGirl.create :post, name: "A. First post"
-            @two = FactoryGirl.create :post, name: "B. Second post"
-            @three = FactoryGirl.create :post, name: "C. Third post"
-            @four = FactoryGirl.create :post, name: "D. Fourth post"
+			@one = FactoryGirl.create :post, name: "A. First post"
+			@two = FactoryGirl.create :post, name: "B. Second post"
+			@three = FactoryGirl.create :post, name: "C. Third post"
+			@four = FactoryGirl.create :post, name: "D. Fourth post"
 
-            # Additional comments for multi-sorting
-            FactoryGirl.create :comment, post: @one
-            FactoryGirl.create :comment, post: @two
+			# Additional comments for multi-sorting
+			FactoryGirl.create :comment, post: @one
+			FactoryGirl.create :comment, post: @two
 
-            @ascending = [@one, @four, @two, @three]
+			@ascending = [@one, @four, @two, @three]
 			@descending = [@three, @two, @four, @one]
 
-            Querify.params.clear
-        end
+			Querify.params.clear
+		end
 
-        it 'only has 4 posts for testing' do
+		it 'only has 4 posts for testing' do
 
-            assert_equal 4, Post.count
+			assert_equal 4, Post.count
 
-        end
+		end
 
-        describe 'no filterable parameters' do
+		describe 'no filterable parameters' do
 
-            it 'returns empty Querify.where and Querify.having arrays' do
+			it 'returns empty Querify.where and Querify.having arrays' do
 
-                Querify.params = {:where => {}}
-                Post.filterable
+				Querify.params = {:where => {}}
+				Post.filterable
 
-                assert_equal [], Querify.where_filters
-                assert_equal [], Querify.having_filters
+				assert_equal [], Querify.where_filters
+				assert_equal [], Querify.having_filters
 
-            end
+			end
 
-        end
+		end
 
-        describe 'one filterable parameter' do
+		describe 'one filterable parameter' do
 
-            it 'returns greater than' do
+			it 'returns greater than' do
 
-                Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
+				Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
 
-                assert_equal 3, Post.filterable.count
+				assert_equal 3, Post.filterable.count
 
-            end
+			end
 
-            it 'returns greater than or equal to' do
+			it 'returns greater than or equal to' do
 
-                Querify.params = {:where=>{"name"=>{"gteq"=>"C. Third post"}}}
+				Querify.params = {:where=>{"name"=>{"gteq"=>"C. Third post"}}}
 
-                assert_equal 2, Post.filterable.count
+				assert_equal 2, Post.filterable.count
 
-            end
+			end
 
-            it 'returns less than' do
+			it 'returns less than' do
 
-                Querify.params = {:where=>{"name"=>{"lt"=>"B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"lt"=>"B. Second post"}}}
 
-                assert_equal 1, Post.filterable.count
+				assert_equal 1, Post.filterable.count
 
-            end
+			end
 
-            it 'returns less than or equal to' do
+			it 'returns less than or equal to' do
 
-                Querify.params = {:where=>{"name"=>{"lteq"=>"B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"lteq"=>"B. Second post"}}}
 
-                assert_equal 2, Post.filterable.count
+				assert_equal 2, Post.filterable.count
 
-            end
+			end
 
-            it 'returns equal to' do
+			it 'returns equal to' do
 
-                Querify.params = {:where=>{"name"=>{"eq"=>"B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"eq"=>"B. Second post"}}}
 
-                assert_equal 1, Post.filterable.count
+				assert_equal 1, Post.filterable.count
 
-            end
+			end
 
-            it 'returns not equal to' do
+			it 'returns not equal to' do
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
 
-                assert_equal 3, Post.filterable.count
+				assert_equal 3, Post.filterable.count
 
-            end
+			end
 
-            it 'returns is' do
+			it 'returns is' do
 
-                FactoryGirl.create(:post, name: nil)
-                Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
+				FactoryGirl.create(:post, name: nil)
+				Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
 
-                assert_equal 1, Post.filterable.count
+				assert_equal 1, Post.filterable.count
 
-            end
+			end
 
-            it 'returns is not' do
+			it 'returns is not' do
 
-                FactoryGirl.create(:post, name: nil)
-                Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
+				FactoryGirl.create(:post, name: nil)
+				Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
 
-                assert_equal 4, Post.filterable.count
+				assert_equal 4, Post.filterable.count
 
-            end
+			end
 
-            it 'returns case insensitive like' do
+			it 'returns case insensitive like' do
 
-                Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
+				Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
 
-                assert_equal 1, Post.filterable.count
+				assert_equal 1, Post.filterable.count
 
-            end
+			end
 
-            it 'returns case sensitive like' do
+			it 'returns case sensitive like' do
 
-                Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
+				Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
 
-                assert_equal 0, Post.filterable.count
+				assert_equal 0, Post.filterable.count
 
-            end
+			end
 
-            it 'returns in' do
+			it 'returns in' do
 
-                Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
 
-                assert_equal 2, Post.filterable.count
+				assert_equal 2, Post.filterable.count
 
-            end
+			end
 
-            it 'returns not in' do
+			it 'returns not in' do
 
-                Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
+				Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
 
-                assert_equal 2, Post.filterable.count
+				assert_equal 2, Post.filterable.count
 
-            end
+			end
 
-            it 'ignores errors on column security violations' do
+			it 'ignores errors on column security violations' do
 
-                Post.filterable(columns: {author_id: :integer}, only: true)
-                Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
+				Post.filterable(columns: {author_id: :integer}, only: true)
+				Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
 
-                # No error should be raised because #filterable ignores errors
-                p = Post.all.filterable
+				# No error should be raised because #filterable ignores errors
+				p = Post.all.filterable
 
-                # Result should not conform to the banned params
-                assert_equal 4, p.length
+				# Result should not conform to the banned params
+				assert_equal 4, p.length
 
-            end
+			end
 
 
 
-            it 'filters using joins' do
+			it 'filters using joins' do
 
-                FactoryGirl.create(:comment, post: Post.last, author: Author.first)
+				FactoryGirl.create(:comment, post: Post.last, author: Author.first)
 
-                Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
-                p = Post.joins(:comments).filterable
-                assert_equal 3, p.length
-            end
+				Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
+				p = Post.joins(:comments).filterable
+				assert_equal 3, p.length
+			end
 
-            it 'filters with group_by' do
+			it 'filters with group_by' do
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
+				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
-                # p = {[author_id, number_posts], [author_id, number_posts]}
-                p = Post.group(:author_id).filterable
+				# p = {[author_id, number_posts], [author_id, number_posts]}
+				p = Post.group(:author_id).filterable
 
-                assert_equal 3, p.count.length
+				assert_equal 3, p.count.length
 
-                assert p.count.values.include?(1)
+				assert p.count.values.include?(1)
 
-            end
+			end
 
-            it 'filters with :group_by and :having' do
+			it 'filters with :group_by and :having' do
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
+				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
 
-                p = Post.group(:author_id).filterable
+				p = Post.group(:author_id).filterable
 
-                # There should be no authors returned
-                assert_equal 0, p.count.length
+				# There should be no authors returned
+				assert_equal 0, p.count.length
 
-            end
+			end
 
-            it 'ignores bad operator names' do
+			it 'ignores bad operator names' do
 
-                Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
+				Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
 
-                # Should not raise error
-                Post.filterable
+				# Should not raise error
+				Post.filterable
 
-            end
+			end
 
-            it 'ignores having without group_by errors' do
+			it 'ignores having without group_by errors' do
 
-                Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
+				Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
 
-                # Should not raise error
-                Post.filterable
+				# Should not raise error
+				Post.filterable
 
-            end
+			end
 
-            it 'ignores bad column names' do
+			it 'ignores bad column names' do
 
-                Querify.params = {:where=>{"elephant"=>{"neq"=>"C. Third post"}}}
+				Querify.params = {:where=>{"elephant"=>{"neq"=>"C. Third post"}}}
 
-                # Should not raise error
-                Post.filterable
+				# Should not raise error
+				Post.filterable
 
-            end
+			end
 
-            it 'can use filterable, sortable, and paginate all at once' do
+			it 'can use filterable, sortable, and paginate all at once' do
 
-                Querify.config.min_per_page = 1
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :sort=>{"name" => :asc}, :per_page=>2}
-                p = Post.sortable.filterable.paginate
+				Querify.config.min_per_page = 1
+				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :sort=>{"name" => :asc}, :per_page=>2}
+				p = Post.sortable.filterable.paginate
 
-                assert_equal 2, p.length
-                assert p[0].name < p[1].name
-                assert p[0].name != "C. Third post" && p[1].name != "C. Third post"
+				assert_equal 2, p.length
+				assert p[0].name < p[1].name
+				assert p[0].name != "C. Third post" && p[1].name != "C. Third post"
 
-            end
+			end
 
-        end
+		end
 
-        describe 'two filterable parameters' do
+		describe 'two filterable parameters' do
 
-            it 'works with two filterable parameters' do
+			it 'works with two filterable parameters' do
 
-                Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
-                p = Post.filterable
-                assert_equal 2, p.length
+				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
+				p = Post.filterable
+				assert_equal 2, p.length
 
-            end
+			end
 
-        end
+		end
 
 
-        describe '#filterable!' do
+		describe '#filterable!' do
 
-            it '#filterable! errors on bad operator' do
+			it '#filterable! errors on bad operator' do
 
-                Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
-                assert_raises Querify::InvalidOperator do
-    				Post.filterable!.to_a
+				Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
+				assert_raises Querify::InvalidOperator do
+					Post.filterable!.to_a
 
-    			end
-            end
+				end
+			end
 
-            it '#filterable! errors on bad column name' do
+			it '#filterable! errors on bad column name' do
 
-                Querify.params = {:where=>{"asdf"=>{"gt"=>"B."}}}
-                assert_raises Querify::InvalidFilterColumn do
-    				Post.filterable!.to_a
+				Querify.params = {:where=>{"asdf"=>{"gt"=>"B."}}}
+				assert_raises Querify::InvalidFilterColumn do
+					Post.filterable!.to_a
 
-    			end
-            end
+				end
+			end
 
-            it '#filterable! errors on column security error' do
+			it '#filterable! errors on column security error' do
 
-                one_id = Post.second.id
-                another_id = Post.last.id
+				one_id = Post.second.id
+				another_id = Post.last.id
 
-                Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
-                assert_raises Querify::InvalidFilterColumn do
-                    Post.all.filterable!(columns: {author_id: :integer}, only: true)
+				Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
+				assert_raises Querify::InvalidFilterColumn do
+					Post.all.filterable!(columns: {author_id: :integer}, only: true)
 
-                end
+				end
 
-            end
+			end
 
-            it '#filterable! errors on :having without :group_by' do
+			it '#filterable! errors on :having without :group_by' do
 
-                Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
-                puts "Having without grouped by"
+				Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
+				puts "Having without grouped by"
 
-                assert_raises Querify::QueryNotYetGrouped do
-                    Post.having("author_id > ?", "1").filterable!
-                end
+				assert_raises Querify::QueryNotYetGrouped do
+					Post.having("author_id > ?", "1").filterable!
+				end
 
-            end
+			end
 
 
-        end
+		end
 
-    end
+	end
 
 
 end
