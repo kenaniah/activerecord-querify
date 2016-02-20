@@ -17,4 +17,5 @@ group :development, :test do
 	gem 'faker'
 	gem 'factory_girl_rails' # Do we need this here?
 	gem 'minitest-reporters'
+	gem 'pg'
 end

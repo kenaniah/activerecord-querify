@@ -42,7 +42,6 @@ module Querify
 						if defined?(self.joins_values) && !column.include?(".")
 							column = self.table_name + "." + column
 						end
-
 						# Sort the query
 						sort = Querify::Sort.new(column, direction)
 						query = query.order sort.to_sql

@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20160208195855) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "authors", force: :cascade do |t|
     t.string   "name"
     t.integer  "posts_count"
@@ -29,8 +32,8 @@ ActiveRecord::Schema.define(version: 20160208195855) do
     t.datetime "updated_at", null: false
   end
 
-  add_index "comments", ["author_id"], name: "index_comments_on_author_id"
-  add_index "comments", ["post_id"], name: "index_comments_on_post_id"
+  add_index "comments", ["author_id"], name: "index_comments_on_author_id", using: :btree
+  add_index "comments", ["post_id"], name: "index_comments_on_post_id", using: :btree
 
   create_table "posts", force: :cascade do |t|
     t.integer  "author_id"
@@ -40,6 +43,9 @@ ActiveRecord::Schema.define(version: 20160208195855) do
     t.datetime "updated_at",     null: false
   end
 
-  add_index "posts", ["author_id"], name: "index_posts_on_author_id"
+  add_index "posts", ["author_id"], name: "index_posts_on_author_id", using: :btree
 
+  add_foreign_key "comments", "authors"
+  add_foreign_key "comments", "posts"
+  add_foreign_key "posts", "authors"
 end

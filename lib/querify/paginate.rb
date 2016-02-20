@@ -37,7 +37,6 @@ module Querify
 			per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
 			per_page = [per_page, options[:min_per_page]].max
 
-
 			# Set the pagination meta headers to be returned with the HTTP response
 
 			Querify.headers["X-Per-Page"] = per_page.to_s
@@ -66,11 +65,10 @@ module Querify
 
 		# Determines the max per page option (options overrides params)
 		def determine_max options
-
 			max = options[:max_per_page]
-
 			# Treat 0 the same as nil
 			max = nil if max == 0
+
 			# If :max_per_page is not explicitly nil, parse it
 			unless options.has_key?(:max_per_page) && max.nil?
 				max = options.fetch(:max_per_page).to_i rescue Querify.config.max_per_page
@@ -109,6 +107,7 @@ module Querify
 					20
 				end
 			end
+
 			# Override using the params hash if parsable
 			unless Querify.params[:per_page].nil?
 				per_page = Querify.params[:per_page].to_i rescue per_page
