@@ -45,6 +45,17 @@ module Querify
 			yield self.config
 		end
 
+		# Recursively flattens a hash (http://stackoverflow.com/a/12270255)
+		def flatten_hash(hash)
+			hash.flat_map do |key, value|
+				if value.is_a?(Hash)
+					recursive_flatten(value).map { |ks, v| [[key] + ks, v] }
+				else
+					[[[key], value]]
+				end
+			end.to_h
+		end
+
 	end
 
 	class Config
