@@ -11,6 +11,9 @@ require 'querify/paginate'
 require 'querify/sort'
 require 'querify/sortable'
 
+# select module
+require 'querify/selectable'
+
 # Filtering module
 require 'querify/filterable'
 

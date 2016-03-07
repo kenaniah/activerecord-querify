@@ -26,4 +26,7 @@ module Querify
 	# Thrown when an unrecognized type is passed for a column
 	class InvalidColumnType < Error; end
 
+	# Raise not specified params error
+	class ParameterNotGiven < Error; end
+
 end
