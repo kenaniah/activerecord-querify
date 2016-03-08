@@ -29,6 +29,10 @@ module Querify
 					unless determine_columns.include?(column)
 						raise Querify::InvalidColumn.new(column), "#{column} does not exist"
 					end
+					# Can't nodify id column
+					if column == "id"
+						raise Querify::InvalidColumn.new(column), "id column alias is not permitted"
+					end
 				end
 
 				sql_alias = Querify.params["select"].to_a.map do |column|
@@ -43,7 +47,6 @@ module Querify
 
 				if throw_error
 					raise err
-
 				end
 
 			end
