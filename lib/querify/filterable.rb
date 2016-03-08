@@ -29,7 +29,7 @@ module Querify
 			if Querify.params[filter_type]
 
 				Querify.params[filter_type].each do |column, filters|
-					
+
 					filters.each do |operator, value|
 
 						begin

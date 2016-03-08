@@ -27,13 +27,12 @@ describe Querify::Selectable do
 
 			Querify.params = {
 				"select" => {
-					"id" => "id",
 					"name" => "Author Name",
 					"posts_count" => "Number of posts"
 				}
 			}
 
-			assert_equal Author.selectable, [{"id" => @author.id, "Author Name"=>"Test Author", "Number of posts" => 1}]
+			assert_equal Author.selectable, [{"id"=> @author.id, "Author Name"=>"Test Author", "Number of posts" => 1}]
 
 		end
 
@@ -45,7 +44,7 @@ describe Querify::Selectable do
 				}
 			}
 
-			assert_equal Post.selectable, [{"id" => nil, "Post Content"=> @post.name}]
+			assert_equal Post.selectable, [{"id" => @post.id, "Post Content" => @post.name}]
 
 		end
 
@@ -61,6 +60,41 @@ describe Querify::Selectable do
 
 		end
 
+		it 'returns multiple records' do
+
+			@post2 = FactoryGirl.create(:post)
+
+			Querify.params = {
+				"select" => {
+					"name" => "Post Content"
+				}
+			}
+
+			assert_equal Post.selectable, [{"id" => @post.id, "Post Content" => @post.name}, {"id" => @post2.id, "Post Content" => @post2.name}]
+
+		end
+
+		it 'returns AR relationships' do
+
+			@post2 = FactoryGirl.create(:post, author: @author)
+
+			Querify.params = {
+				"select" => {
+					"name" => "Post Content"
+				}
+			}
+
+			assert_equal @author.posts.count, 2
+			assert_equal @author.posts.selectable, [{"id" => @post.id, "Post Content" => @post.name}, {"id" => @post2.id, "Post Content" => @post2.name}]
+		end
+
+	end
+
+	describe "Selectable!" do
+		before do
+			@author = FactoryGirl.create(:author, name: "Test Author")
+			@post = FactoryGirl.create(:post, author: @author)
+		end
 	end
 
 end

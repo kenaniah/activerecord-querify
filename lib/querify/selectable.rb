@@ -34,8 +34,10 @@ module Querify
 				sql_alias = Querify.params["select"].to_a.map do |column|
 					"#{column[0]} AS \"#{column[1]}\""
 				end.join(", ")
+				# Id hack
+					query = query.select("id AS id").select(sql_alias)
 
-				query.select(sql_alias).as_json
+				query.as_json
 
 			rescue Querify::Error => err
 
