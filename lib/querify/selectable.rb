@@ -35,10 +35,12 @@ module Querify
 					end
 				end
 
+				# Build the SQL string
 				sql_alias = Querify.params["select"].to_a.map do |column|
 					"#{column[0]} AS \"#{column[1]}\""
 				end.join(", ")
-				# Id hack
+
+				# Always return id instead of nil value
 					query = query.select("id AS id").select(sql_alias)
 
 				query.as_json
