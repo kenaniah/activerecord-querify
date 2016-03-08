@@ -100,12 +100,12 @@ describe Querify::Selectable do
 			Querify.params = {
 				"select" => {
 					"name" => "Post Content",
-					"created_at" => "Time of Creation"
+					"comments_count" => "Number of Comments"
 				}
 			}
 
 			assert_equal @author.posts.count, 1
-			assert_equal @author.posts.selectable, [{"id" => @post.id, "Post Content" => @post.name, "Time of Creation" => @post.created_at}]
+			assert_equal @author.posts.selectable, [{"id" => @post.id, "Post Content" => @post.name, "Number of Comments" => @post.comments_count}]
 
 		end
 
@@ -201,12 +201,12 @@ describe Querify::Selectable do
 			Querify.params = {
 				"select" => {
 					"name" => "Post Content",
-					"created_at" => "Time of Creation"
+					"comments_count" => "Number of Comments"
 				}
 			}
 
 			assert_equal @author.posts.count, 1
-			assert_equal @author.posts.selectable!, [{"id" => @post.id, "Post Content" => @post.name, "Time of Creation" => @post.created_at}]
+			assert_equal @author.posts.selectable!, [{"id" => @post.id, "Post Content" => @post.name, "Number of Comments" => @post.comments_count}]
 
 		end
 
