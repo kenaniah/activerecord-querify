@@ -29,4 +29,7 @@ module Querify
 	# Raise not specified params error
 	class ParameterNotGiven < Error; end
 
+	# Thrown when column does not exist
+	class InvalidColumn < Error; end
+
 end

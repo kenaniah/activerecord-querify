@@ -19,15 +19,45 @@ describe Querify::Selectable do
 	describe "Selectable" do
 
 		before do
-			@author = FactoryGirl.create(:author, name: "Test Name")
+			@author = FactoryGirl.create(:author, name: "Test Author")
+			@post = FactoryGirl.create(:post, author: @author)
 		end
 
 		it "returns record specified by querified params" do
 
-			Querify.params = {select: {name: "Test Name"}}
+			Querify.params = {
+				"select" => {
+					"id" => "id",
+					"name" => "Author Name",
+					"posts_count" => "Number of posts"
+				}
+			}
 
-			assert_equal @author.name, "Test Name"
-			assert_equal Author.selectable, @author
+			assert_equal Author.selectable, [{"id" => @author.id, "Author Name"=>"Test Author", "Number of posts" => 1}]
+
+		end
+
+		it 'returns record without specified id' do
+
+			Querify.params = {
+				"select" => {
+					"name" => "Post Content"
+				}
+			}
+
+			assert_equal Post.selectable, [{"id" => nil, "Post Content"=> @post.name}]
+
+		end
+
+		it 'returns nothing if column does not exist' do
+
+			Querify.params = {
+				"select" => {
+					"does_not_exist" => "id"
+				}
+			}
+
+			assert_equal Post.selectable, nil
 
 		end
 

@@ -14,17 +14,28 @@ module Querify
 		protected def _selectable throw_error
 
 			query = self
-
 			# Cancel or raise error if there is no 'select' params
-			if !Querify.params[:select]
+			if !Querify.params["select"]
 				if throw_error
-					raise Querify::ParameterNotGiven.new, "Params must be given"
+					raise Querify::ParameterNotGiven.new, "Select query must be given"
 				else
 					return nil
 				end
 			end
 
 			begin
+				# Ensure the column exist in the DB
+				Querify.params["select"].keys.each do |column|
+					unless determine_columns.include?(column)
+						raise Querify::InvalidColumn.new(column), "#{column} does not exist"
+					end
+				end
+
+				sql_alias = Querify.params["select"].to_a.map do |column|
+					"#{column[0]} AS \"#{column[1]}\""
+				end.join(", ")
+
+				query.select(sql_alias).as_json
 
 			rescue Querify::Error => err
 
