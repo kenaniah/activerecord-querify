@@ -194,7 +194,7 @@ describe ActiveRecord::Querify::Paginate do
 
 				p = Post.paginate
 
-				assert p[0].id == Post.first.id
+				assert_equal p.first.id, Post.first.id
 
 			end
 
@@ -274,5 +274,5 @@ describe ActiveRecord::Querify::Paginate do
 		end
 
 	end
-	
+
 end

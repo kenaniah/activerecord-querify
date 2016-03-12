@@ -280,7 +280,7 @@ describe ActiveRecord::Querify do
 			it '#filterable! errors on bad operator' do
 
 				ActiveRecord::Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
-				assert_raises Querify::InvalidOperator do
+				assert_raises ActiveRecord::Querify::InvalidOperator do
 					Post.filterable!.to_a
 
 				end
