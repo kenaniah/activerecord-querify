@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Querify::Paginate do
+describe ActiveRecord::Querify::Paginate do
 
 	before do
 		truncate_db
@@ -40,16 +40,17 @@ describe Querify::Paginate do
 
 		before do
 
-			Querify.config.max_per_page = 5
-			Querify.config.min_per_page = 1
-			Querify.config.per_page = 3
+			ActiveRecord::Querify.config.max_per_page = 5
+			ActiveRecord::Querify.config.min_per_page = 1
+			ActiveRecord::Querify.config.per_page = 3
 
 			# Make one more post than the configured max_per_page for testing purposes
 			6.times do
 				FactoryGirl.create(:post)
 			end
 
-			Querify.params.clear
+			ActiveRecord::Querify.params.clear
+
 		end
 
 		it 'only has 6 posts for testing' do
@@ -60,17 +61,17 @@ describe Querify::Paginate do
 
 			it 'returns an standard headers hash if no headers requested' do
 
-				Querify.params = {:per_page=>3}
+				ActiveRecord::Querify.params = {:per_page=>3}
 				Post.paginate
-				assert_equal 2, Querify.headers.length
+				assert_equal 2, ActiveRecord::Querify.headers.length
 
 			end
 
 			it 'returns a complete headers hash if requested' do
 
-				Querify.params = {:page_total_stats=>"on"}
+				ActiveRecord::Querify.params = {:page_total_stats=>"on"}
 				Post.paginate
-				assert_equal 4, Querify.headers.length
+				assert_equal 4, ActiveRecord::Querify.headers.length
 
 			end
 
@@ -80,7 +81,7 @@ describe Querify::Paginate do
 
 			it 'uses config for per_page settings if no option given in params' do
 
-				Querify.params = {}
+				ActiveRecord::Querify.params = {}
 
 				assert_equal 3, Post.paginate.length
 
@@ -109,8 +110,8 @@ describe Querify::Paginate do
 					FactoryGirl.create(:post)
 				end
 
-				Querify.config.per_page = nil
-				Querify.config.max_per_page = 50
+				ActiveRecord::Querify.config.per_page = nil
+				ActiveRecord::Querify.config.max_per_page = 50
 
 				p = Post.paginate
 				assert_equal 20, p.length
@@ -119,7 +120,7 @@ describe Querify::Paginate do
 
 			it 'uses options[:max_per_page] if given as not nil or zero' do
 
-				Querify.config.per_page = nil
+				ActiveRecord::Querify.config.per_page = nil
 				p = Post.paginate(max_per_page: 4)
 				assert_equal 4, p.length
 
@@ -127,17 +128,16 @@ describe Querify::Paginate do
 
 			it 'uses config.max_per_page if no option[:max_per_page] given' do
 
-				Querify.config.per_page = nil
+				ActiveRecord::Querify.config.per_page = nil
 				p = Post.paginate
 				assert_equal 5, p.length
-
 
 			end
 
 			it 'uses the hardcoded maximum if no options provided at all' do
 
-				Querify.config.per_page = 500
-				Querify.config.max_per_page = nil
+				ActiveRecord::Querify.config.per_page = 500
+				ActiveRecord::Querify.config.max_per_page = nil
 
 				100.times do
 					FactoryGirl.create(:post)
@@ -151,7 +151,7 @@ describe Querify::Paginate do
 
 			it 'disables pagination and sets no headers if given params[per_page] = 0 and set :max_per_page = 0' do
 
-				Querify.params = {:per_page => 0}
+				ActiveRecord::Querify.params = {:per_page => 0}
 
 				100.times do
 					FactoryGirl.create(:post)
@@ -164,7 +164,8 @@ describe Querify::Paginate do
 				# Over the hardcoded limit
 				assert p.count > 100
 
-				assert_empty Querify.headers
+				assert_empty ActiveRecord::Querify.headers
+
 			end
 
 			it 'uses options[:page] if given' do
@@ -181,7 +182,7 @@ describe Querify::Paginate do
 
 				 a = Post.paginate
 
-				 Querify.params = {:page => 2}
+				 ActiveRecord::Querify.params = {:page => 2}
 				 b = Post.paginate
 
 				 assert a.length == 3 && a.length == b.length
@@ -199,7 +200,7 @@ describe Querify::Paginate do
 
 			it 'uses params[:per_page] no matter what other option given' do
 
-				Querify.params = {:per_page => 2}
+				ActiveRecord::Querify.params = {:per_page => 2}
 
 				p = Post.paginate(per_page: 4)
 
@@ -226,8 +227,8 @@ describe Querify::Paginate do
 
 			it 'uses hardcoded 20 if config is not configured and no other options are given' do
 
-				Querify.config.per_page = nil
-				Querify.config.max_per_page = nil
+				ActiveRecord::Querify.config.per_page = nil
+				ActiveRecord::Querify.config.max_per_page = nil
 
 				25.times do
 					FactoryGirl.create(:post)
@@ -249,7 +250,7 @@ describe Querify::Paginate do
 
 			it 'does not allow per_page options smaller than the min to be returned' do
 
-				Querify.config.min_per_page = 2
+				ActiveRecord::Querify.config.min_per_page = 2
 				p = Post.paginate(per_page: 1)
 
 				assert_equal 2, p.length
@@ -273,4 +274,5 @@ describe Querify::Paginate do
 		end
 
 	end
+	
 end

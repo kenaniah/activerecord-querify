@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Querify do
+describe ActiveRecord::Querify do
 
 	before do
 		truncate_db
@@ -9,7 +9,7 @@ describe Querify do
 	describe 'Filterable sanity tests' do
 
 		it 'is a module' do
-			assert_kind_of Module, Querify
+			assert_kind_of Module, ActiveRecord::Querify
 		end
 
 		it 'has access to the test dummy model' do
@@ -49,7 +49,8 @@ describe Querify do
 			@ascending = [@one, @four, @two, @three]
 			@descending = [@three, @two, @four, @one]
 
-			Querify.params.clear
+			ActiveRecord::Querify.params.clear
+
 		end
 
 		it 'only has 4 posts for testing' do
@@ -62,11 +63,11 @@ describe Querify do
 
 			it 'returns empty Querify.where and Querify.having arrays' do
 
-				Querify.params = {:where => {}}
+				ActiveRecord::Querify.params = {:where => {}}
 				Post.filterable
 
-				assert_equal [], Querify.where_filters
-				assert_equal [], Querify.having_filters
+				assert_equal [], ActiveRecord::Querify.where_filters
+				assert_equal [], ActiveRecord::Querify.having_filters
 
 			end
 
@@ -76,7 +77,7 @@ describe Querify do
 
 			it 'returns greater than' do
 
-				Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"lt"=>"D. Fourth post"}}}
 
 				assert_equal 3, Post.filterable.count
 
@@ -84,7 +85,7 @@ describe Querify do
 
 			it 'returns greater than or equal to' do
 
-				Querify.params = {:where=>{"name"=>{"gteq"=>"C. Third post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"gteq"=>"C. Third post"}}}
 
 				assert_equal 2, Post.filterable.count
 
@@ -92,7 +93,7 @@ describe Querify do
 
 			it 'returns less than' do
 
-				Querify.params = {:where=>{"name"=>{"lt"=>"B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"lt"=>"B. Second post"}}}
 
 				assert_equal 1, Post.filterable.count
 
@@ -100,7 +101,7 @@ describe Querify do
 
 			it 'returns less than or equal to' do
 
-				Querify.params = {:where=>{"name"=>{"lteq"=>"B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"lteq"=>"B. Second post"}}}
 
 				assert_equal 2, Post.filterable.count
 
@@ -108,7 +109,7 @@ describe Querify do
 
 			it 'returns equal to' do
 
-				Querify.params = {:where=>{"name"=>{"eq"=>"B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"eq"=>"B. Second post"}}}
 
 				assert_equal 1, Post.filterable.count
 
@@ -116,7 +117,7 @@ describe Querify do
 
 			it 'returns not equal to' do
 
-				Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"neq"=>"B. Second post"}}}
 
 				assert_equal 3, Post.filterable.count
 
@@ -125,7 +126,7 @@ describe Querify do
 			it 'returns is' do
 
 				FactoryGirl.create(:post, name: nil)
-				Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"is"=>':null'}}}
 
 				assert_equal 1, Post.filterable.count
 
@@ -134,7 +135,7 @@ describe Querify do
 			it 'returns is not' do
 
 				FactoryGirl.create(:post, name: nil)
-				Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"isnot"=>':null'}}}
 
 				assert_equal 4, Post.filterable.count
 
@@ -142,7 +143,7 @@ describe Querify do
 
 			it 'returns case insensitive like' do
 
-				Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"ilike"=>"b."}}}
 
 				assert_equal 1, Post.filterable.count
 
@@ -150,7 +151,7 @@ describe Querify do
 
 			it 'returns case sensitive like' do
 
-				Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"like"=>"b."}}}
 
 				assert_equal 0, Post.filterable.count
 
@@ -158,7 +159,7 @@ describe Querify do
 
 			it 'returns in' do
 
-				Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"in"=>"A. First post,B. Second post"}}}
 
 				assert_equal 2, Post.filterable.count
 
@@ -166,7 +167,7 @@ describe Querify do
 
 			it 'returns not in' do
 
-				Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"notin"=>"A. First post,B. Second post"}}}
 
 				assert_equal 2, Post.filterable.count
 
@@ -175,7 +176,7 @@ describe Querify do
 			it 'ignores errors on column security violations' do
 
 				Post.filterable(columns: {author_id: :integer}, only: true)
-				Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
+				ActiveRecord::Querify.params = {:where=>{"id"=>{"notin"=>"A. First post,B. Second post"}}}
 
 				# No error should be raised because #filterable ignores errors
 				p = Post.all.filterable
@@ -191,14 +192,14 @@ describe Querify do
 
 				FactoryGirl.create(:comment, post: Post.last, author: Author.first)
 
-				Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
+				ActiveRecord::Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
 				p = Post.joins(:comments).filterable
 				assert_equal 3, p.length
 			end
 
 			it 'filters with group_by' do
 
-				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}}
 
 				# p = {[author_id, number_posts], [author_id, number_posts]}
 				p = Post.group(:author_id).filterable
@@ -211,7 +212,7 @@ describe Querify do
 
 			it 'filters with :group_by and :having' do
 
-				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :having=>{"author_id"=>{"lt"=>1}}}
 
 				p = Post.group(:author_id).filterable
 
@@ -222,7 +223,7 @@ describe Querify do
 
 			it 'ignores bad operator names' do
 
-				Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"elephant"=>"123"}}}
 
 				# Should not raise error
 				Post.filterable
@@ -231,7 +232,7 @@ describe Querify do
 
 			it 'ignores having without group_by errors' do
 
-				Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
+				ActiveRecord::Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
 
 				# Should not raise error
 				Post.filterable
@@ -240,7 +241,7 @@ describe Querify do
 
 			it 'ignores bad column names' do
 
-				Querify.params = {:where=>{"elephant"=>{"neq"=>"C. Third post"}}}
+				ActiveRecord::Querify.params = {:where=>{"elephant"=>{"neq"=>"C. Third post"}}}
 
 				# Should not raise error
 				Post.filterable
@@ -249,8 +250,8 @@ describe Querify do
 
 			it 'can use filterable, sortable, and paginate all at once' do
 
-				Querify.config.min_per_page = 1
-				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :sort=>{"name" => :asc}, :per_page=>2}
+				ActiveRecord::Querify.config.min_per_page = 1
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"}}, :sort=>{"name" => :asc}, :per_page=>2}
 				p = Post.sortable.filterable.paginate
 
 				assert_equal 2, p.length
@@ -265,7 +266,7 @@ describe Querify do
 
 			it 'works with two filterable parameters' do
 
-				Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"neq"=>"C. Third post"},"comments_count"=>{"gt"=>0}}}
 				p = Post.filterable
 				assert_equal 2, p.length
 
@@ -278,7 +279,7 @@ describe Querify do
 
 			it '#filterable! errors on bad operator' do
 
-				Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
+				ActiveRecord::Querify.params = {:where=>{"name"=>{"asdf"=>"B."}}}
 				assert_raises Querify::InvalidOperator do
 					Post.filterable!.to_a
 
@@ -287,8 +288,8 @@ describe Querify do
 
 			it '#filterable! errors on bad column name' do
 
-				Querify.params = {:where=>{"asdf"=>{"gt"=>"B."}}}
-				assert_raises Querify::InvalidFilterColumn do
+				ActiveRecord::Querify.params = {:where=>{"asdf"=>{"gt"=>"B."}}}
+				assert_raises ActiveRecord::Querify::InvalidFilterColumn do
 					Post.filterable!.to_a
 
 				end
@@ -299,8 +300,8 @@ describe Querify do
 				one_id = Post.second.id
 				another_id = Post.last.id
 
-				Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
-				assert_raises Querify::InvalidFilterColumn do
+				ActiveRecord::Querify.params = {:where=>{"id"=>{"notin"=>"#{one_id},#{another_id}"}}}
+				assert_raises ActiveRecord::Querify::InvalidFilterColumn do
 					Post.all.filterable!(columns: {author_id: :integer}, only: true)
 
 				end
@@ -309,19 +310,17 @@ describe Querify do
 
 			it '#filterable! errors on :having without :group_by' do
 
-				Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
+				ActiveRecord::Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
 				puts "Having without grouped by"
 
-				assert_raises Querify::QueryNotYetGrouped do
+				assert_raises ActiveRecord::Querify::QueryNotYetGrouped do
 					Post.having("author_id > ?", "1").filterable!
 				end
 
 			end
 
-
 		end
 
 	end
-
 
 end

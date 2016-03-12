@@ -1,6 +1,6 @@
 # Querify
 
-[![Gem Version](https://badge.fury.io/rb/querify.svg)](https://badge.fury.io/rb/querify) [![Circle CI](https://circleci.com/gh/kenaniah/querify.svg?style=shield&circle-token=6f2bd9feb73540b3f8cbbbc57e5ea0156a5625bc)](https://circleci.com/gh/kenaniah/querify) [![Dependency Status](https://gemnasium.com/spidrtech/querify.svg)](https://gemnasium.com/spidrtech/querify) [![Code Climate](https://codeclimate.com/github/kenaniah/querify/badges/gpa.svg)](https://codeclimate.com/github/kenaniah/querify)
+[![Gem Version](https://badge.fury.io/rb/activerecord-querify.svg)](https://badge.fury.io/rb/activerecord-querify) [![Circle CI](https://circleci.com/gh/kenaniah/activerecord-querify.svg?style=shield&circle-token=6f2bd9feb73540b3f8cbbbc57e5ea0156a5625bc)](https://circleci.com/gh/kenaniah/activerecord-querify) [![Dependency Status](https://gemnasium.com/kenaniah/activerecord-querify.svg)](https://gemnasium.com/kenaniah/activerecord-querify) [![Code Climate](https://codeclimate.com/github/kenaniah/activerecord-querify/badges/gpa.svg)](https://codeclimate.com/github/kenaniah/activerecord-querify)
 
 ## Overview
 
@@ -21,7 +21,7 @@ Querify was designed to be query string friendly, making pagination, sorting, an
 In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
 
 ```ruby
-gem 'querify'
+gem 'activerecord-querify'
 ```
 
 To make a query automatically paginate, sort, and dynamically filter based on query string parameters, just add all 3 methods to a query:
@@ -99,7 +99,7 @@ To ensure that clients do not abuse the `:per_page` URL param, we provide the fo
 These may be set in a config block:
 
 ```ruby
-Querify.configure do |config|
+ActiveRecord::Querify.configure do |config|
   config.per_page = 25
   config.min_per_page = 5
   config.max_per_page = 50
@@ -187,15 +187,15 @@ sort[<column_name>]=<direction>
 | `:descnf` | DESC NULLS FIRST |
 | `:descnl` | DESC NULLS LAST |
 
-#### `Querify::InvalidDirection`
+#### `ActiveRecord::Querify::InvalidDirection`
 
-When an invalid direction is passed in to a sort param, `Querify::InvalidDirection` is thrown.
+When an invalid direction is passed in to a sort param, `ActiveRecord::Querify::InvalidDirection` is thrown.
 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
 To force this exception to bubble up, use the `#sortable!` method instead.
 
-#### `Querify::InvalidSortColumn`
+#### `ActiveRecord::Querify::InvalidSortColumn`
 
 This exception is thrown when sortable is called with a whitelist and a sort is requested for a column that is not in the whitelist.
 
@@ -218,4 +218,4 @@ Post.filterable! columns: {id: :integer, name: :text}, only: true # throws an ex
 
 ## Bugs?
 
-If you find a bug please [add an issue on GitHub](https://github.com/kenaniah/querify/issues) or fork the project and send a pull request. Feature requests are also welcome.
+If you find a bug please [add an issue on GitHub](https://github.com/kenaniah/activerecord-querify/issues) or fork the project and send a pull request. Feature requests are also welcome.

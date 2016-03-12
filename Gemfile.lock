@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    querify (2.1.1)
+    activerecord-querify (0.1.0)
       chronic
       rails (~> 4.2)
 
@@ -128,12 +128,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-querify!
   factory_girl_rails
   faker
   minitest-reporters
   pg
   pry
-  querify!
   sqlite3
 
 BUNDLED WITH
