@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activerecord-querify (0.0.2)
+    activerecord-querify (0.0.3)
       chronic (~> 0.10)
       rails (~> 4.2)
 
