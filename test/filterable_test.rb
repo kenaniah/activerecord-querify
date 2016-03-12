@@ -311,7 +311,6 @@ describe ActiveRecord::Querify do
 			it '#filterable! errors on :having without :group_by' do
 
 				ActiveRecord::Querify.params = {:having=>{"name"=>{"neq"=>"C. Third post"}}}
-				puts "Having without grouped by"
 
 				assert_raises ActiveRecord::Querify::QueryNotYetGrouped do
 					Post.having("author_id > ?", "1").filterable!
