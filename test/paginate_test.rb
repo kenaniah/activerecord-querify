@@ -6,7 +6,7 @@ describe ActiveRecord::Querify::Paginate do
 		truncate_db
 	end
 
-	describe 'Paginate sanity tests' do
+	describe 'Paginate API tests' do
 
 		it 'ActiveRecord responds to #paginate' do
 
@@ -77,7 +77,7 @@ describe ActiveRecord::Querify::Paginate do
 
 		end
 
-		describe 'paginate' do
+		describe '#paginate' do
 
 			it 'uses config for per_page settings if no option given in params' do
 
@@ -254,6 +254,37 @@ describe ActiveRecord::Querify::Paginate do
 				p = Post.paginate(per_page: 1)
 
 				assert_equal 2, p.length
+
+			end
+
+			describe "issue #27" do
+
+				before do
+					ActiveRecord::Querify.params = {:page_total_stats => 1}
+				end
+
+				it 'should return a proper count for simple queries' do
+					Post.paginate
+					assert_equal Post.count, ActiveRecord::Querify.headers["X-Total-Results"].to_i
+				end
+
+				it 'should return a proper count for queries using #group' do
+					p1 = Post.first
+					p2 = Post.second
+					2.times do
+						FactoryGirl.create :comment, post: p1
+					end
+					3.times do
+						FactoryGirl.create :comment, post: p2
+					end
+					Comment.select("post_id").group("post_id").paginate
+					assert_equal 2, ActiveRecord::Querify.headers["X-Total-Results"].to_i
+				end
+
+				it 'should return a proper count for queries using #select' do
+					Post.select("posts.*", "posts.id").paginate
+					assert_equal Post.count, ActiveRecord::Querify.headers["X-Total-Results"].to_i
+				end
 
 			end
 
