@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Querify::Sortable do
+describe ActiveRecord::Querify::Sortable do
 
 	# Before is also inherited by child describe blocks
 	before do
@@ -11,7 +11,7 @@ describe Querify::Sortable do
 
 		it 'is a module' do
 
-			assert_kind_of Module, Querify::Sortable
+			assert_kind_of Module, ActiveRecord::Querify::Sortable
 
 		end
 
@@ -74,10 +74,10 @@ describe Querify::Sortable do
 
 			it 'does not add to query array if no sortable params given' do
 
-				Querify.params = {sort: {}}
+				ActiveRecord::Querify.params = {sort: {}}
 				Post.sortable
 
-				assert_empty Querify.sorts
+				assert_empty ActiveRecord::Querify.sorts
 
 			end
 
@@ -87,42 +87,42 @@ describe Querify::Sortable do
 
 			it 'adds sorts to the sorts array when given a single sort' do
 
-				Querify.params = {sort: {"comments_count" => ":desc"}}
+				ActiveRecord::Querify.params = {sort: {"comments_count" => ":desc"}}
 				Post.sortable
 
-				assert Querify.sorts[0].column = "comments_count" && Querify.sorts[0].direction = "DESC"
+				assert ActiveRecord::Querify.sorts[0].column = "comments_count" && ActiveRecord::Querify.sorts[0].direction = "DESC"
 
 			end
 
 			it 'sorts by ascending column names' do
 
-				Querify.params = {sort: {"name" => "asc"}}
+				ActiveRecord::Querify.params = {sort: {"name" => "asc"}}
 				assert_equal @ascending, Post.sortable.to_a
 
-				Querify.params = {sort: {"name" => :asc}}
+				ActiveRecord::Querify.params = {sort: {"name" => :asc}}
 				assert_equal @ascending, Post.sortable.to_a
 
-				Querify.params = {sort: {"name" => ":asc"}}
+				ActiveRecord::Querify.params = {sort: {"name" => ":asc"}}
 				assert_equal @ascending, Post.sortable.to_a
 
 			end
 
 			it 'sorts by descending column names' do
 
-				Querify.params = {sort: {"name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"name" => "desc"}}
 				assert_equal @descending, Post.sortable.to_a
 
-				Querify.params = {sort: {"name" => :desc}}
+				ActiveRecord::Querify.params = {sort: {"name" => :desc}}
 				assert_equal @descending, Post.sortable.to_a
 
-				Querify.params = {sort: {"name" => ":desc"}}
+				ActiveRecord::Querify.params = {sort: {"name" => ":desc"}}
 				assert_equal @descending, Post.sortable.to_a
 
 			end
 
 			it 'sorts using joins' do
 
-				Querify.params = {sort: {":comments.id" => :asc}}
+				ActiveRecord::Querify.params = {sort: {":comments.id" => :asc}}
 				p = Post.joins(:comments).sortable
 
 				# Query should only return two results because only two posts have comments
@@ -134,7 +134,7 @@ describe Querify::Sortable do
 			it 'sorts by ascending nulls first' do
 
 				Post.first.update(name: nil)
-				Querify.params = {sort: {"name" => :ascnf}}
+				ActiveRecord::Querify.params = {sort: {"name" => :ascnf}}
 				p = Post.sortable.to_a
 
 				assert_nil p[0].name
@@ -145,7 +145,7 @@ describe Querify::Sortable do
 			it 'sorts by ascending nulls last' do
 
 				Post.first.update(name: nil)
-				Querify.params = {sort: {"name" => :ascnl}}
+				ActiveRecord::Querify.params = {sort: {"name" => :ascnl}}
 				p = Post.sortable.to_a
 
 				assert_nil p[3].name
@@ -153,8 +153,9 @@ describe Querify::Sortable do
 			end
 
 			it 'sorts by descending nulls first' do
+
 				Post.first.update(name: nil)
-				Querify.params = {sort: {"name" => :descnf}}
+				ActiveRecord::Querify.params = {sort: {"name" => :descnf}}
 				p = Post.sortable.to_a
 
 				assert_nil p[0].name
@@ -165,7 +166,7 @@ describe Querify::Sortable do
 			it 'sorts by descending nulls last' do
 
 				Post.first.update(name: nil)
-				Querify.params = {sort: {"name" => :descnl}}
+				ActiveRecord::Querify.params = {sort: {"name" => :descnl}}
 				p = Post.sortable.to_a
 
 				assert_nil p[3].name
@@ -174,28 +175,28 @@ describe Querify::Sortable do
 
 			it '#sortable ignores non-available columns' do
 
-				Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
 
 				assert_equal @descending, Post.sortable.to_a
-				assert_equal 1, Querify.sorts.count
+				assert_equal 1, ActiveRecord::Querify.sorts.count
 
 			end
 
 			it '#sortable ignores bad operators' do
 
-				Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
 
 				assert_equal @descending, Post.sortable.to_a
-				assert_equal 1, Querify.sorts.count
+				assert_equal 1, ActiveRecord::Querify.sorts.count
 
 			end
 
 			it 'honors column security' do
 
-				Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"comments_count" => "desc", "name" => "desc"}}
 
 				assert_equal @descending, Post.sortable(columns: {name: :text}, only: true).to_a
-				assert_equal 1, Querify.sorts.count
+				assert_equal 1, ActiveRecord::Querify.sorts.count
 
 			end
 
@@ -205,16 +206,16 @@ describe Querify::Sortable do
 
 			it 'sorts multiple columns' do
 
-				Querify.params = {sort: {"name" => :asc}}
+				ActiveRecord::Querify.params = {sort: {"name" => :asc}}
 
 				assert_equal @ascending, Post.sortable.to_a
 
-				Querify.params = {sort: {"comments_count" => :desc, "name" => :desc}}
+				ActiveRecord::Querify.params = {sort: {"comments_count" => :desc, "name" => :desc}}
 				p = Post.sortable
 
 				assert p[0].comments_count.to_i <=  p[1].comments_count.to_i && p[1].comments_count.to_i <= p[2].comments_count.to_i &&  p[2].comments_count.to_i <= p[3].comments_count.to_i
 
-				assert_equal 2, Querify.sorts.count
+				assert_equal 2, ActiveRecord::Querify.sorts.count
 
 			end
 
@@ -224,9 +225,9 @@ describe Querify::Sortable do
 
 			it '#sortable! errors on non-available columns' do
 
-				Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"foobar" => "desc", "name" => "desc"}}
 
-				assert_raises Querify::InvalidSortColumn do
+				assert_raises ActiveRecord::Querify::InvalidSortColumn do
 					Post.sortable!.to_a
 				end
 
@@ -234,12 +235,12 @@ describe Querify::Sortable do
 
 			it '#sortable! errors on bad operators' do
 
-				Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
+				ActiveRecord::Querify.params = {sort: {"comments_count" => "adfkldsflk", "name" => "desc"}}
 
-				assert_raises Querify::InvalidDirection do
+				assert_raises ActiveRecord::Querify::InvalidDirection do
 					Post.sortable!.to_a
 				end
-				
+
 			end
 		end
 

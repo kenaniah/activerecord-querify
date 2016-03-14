@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe Querify::Selectable do
+describe ActiveRecord::Querify::Selectable do
 
 	before do
 		truncate_db
@@ -25,7 +25,7 @@ describe Querify::Selectable do
 
 		it 'returns nothing if select params is not given' do
 
-			Querify.params = {}
+			ActiveRecord::Querify.params = {}
 
 			assert_equal Author.selectable, nil
 
@@ -33,7 +33,7 @@ describe Querify::Selectable do
 
 		it "returns record specified by select params" do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Author Name",
 					"posts_count" => "Number of posts"
@@ -46,7 +46,7 @@ describe Querify::Selectable do
 
 		it 'returns nothing if column does not exist' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"does_not_exist" => "id"
 				}
@@ -58,7 +58,7 @@ describe Querify::Selectable do
 
 		it 'returns nothing if trying to alias id' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"id" => "Post Id"
 				}
@@ -72,7 +72,7 @@ describe Querify::Selectable do
 
 			@post2 = FactoryGirl.create(:post)
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content"
 				}
@@ -84,7 +84,7 @@ describe Querify::Selectable do
 
 		it 'returns AR relationships' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content"
 				}
@@ -97,7 +97,7 @@ describe Querify::Selectable do
 
 		it 'returns AR relationships with multiple select query' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content",
 					"comments_count" => "Number of Comments"
@@ -118,11 +118,11 @@ describe Querify::Selectable do
 			@post = FactoryGirl.create(:post, author: @author)
 		end
 
-		it 'raises Querify::ParameterNotGiven if select params is not given' do
+		it 'raises ActiveRecord::Querify::ParameterNotGiven if select params is not given' do
 
-			Querify.params = {}
+			ActiveRecord::Querify.params = {}
 
-			assert_raises Querify::ParameterNotGiven do
+			assert_raises ActiveRecord::Querify::ParameterNotGiven do
 				Author.selectable!
 			end
 
@@ -130,7 +130,7 @@ describe Querify::Selectable do
 
 		it "returns record specified by select params" do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Author Name",
 					"posts_count" => "Number of posts"
@@ -141,15 +141,15 @@ describe Querify::Selectable do
 
 		end
 
-		it 'raise Querify::InvalidColumn error if column does not exist' do
+		it 'raise ActiveRecord::Querify::InvalidColumn error if column does not exist' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"does_not_exist" => "id"
 				}
 			}
 
-			assert_raises Querify::InvalidColumn do
+			assert_raises ActiveRecord::Querify::InvalidColumn do
 				Author.selectable!
 			end
 
@@ -157,13 +157,13 @@ describe Querify::Selectable do
 
 		it 'raises Qerify::InvalidColumn error if trying to alias id' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"id" => "Post Id"
 				}
 			}
 
-			assert_raises Querify::InvalidColumn do
+			assert_raises ActiveRecord::Querify::InvalidColumn do
 				Author.selectable!
 			end
 
@@ -173,7 +173,7 @@ describe Querify::Selectable do
 
 			@post2 = FactoryGirl.create(:post)
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content"
 				}
@@ -185,7 +185,7 @@ describe Querify::Selectable do
 
 		it 'returns AR relationships' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content"
 				}
@@ -198,7 +198,7 @@ describe Querify::Selectable do
 
 		it 'returns AR relationships with multiple select query' do
 
-			Querify.params = {
+			ActiveRecord::Querify.params = {
 				"select" => {
 					"name" => "Post Content",
 					"comments_count" => "Number of Comments"
