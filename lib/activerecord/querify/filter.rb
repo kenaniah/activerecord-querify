@@ -63,7 +63,7 @@ module ActiveRecord
 
 			# Returns a safely quoted version of the column
 			def quoted_column
-				ActiveRecord::Base.connection.quote_column_name @column
+				Querify.quote_column @column
 			end
 
 			def value= val

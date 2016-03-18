@@ -52,20 +52,7 @@ module ActiveRecord
 
 			# Returns a safely quoted version of the column
 			def quoted_column
-
-				# Check to see if our column is a prefix
-				table, col = @column.split ".", 2
-
-				if col.nil?
-					field = ActiveRecord::Base.connection.quote_column_name @column
-				else
-					field = ActiveRecord::Base.connection.quote_table_name table
-					field += "."
-					field += ActiveRecord::Base.connection.quote_column_name col
-				end
-
-				field
-
+				Querify.quote_column @column
 			end
 
 			# Returns the filter as a hash

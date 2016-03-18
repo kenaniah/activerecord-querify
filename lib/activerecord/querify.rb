@@ -57,6 +57,24 @@ module ActiveRecord
 				end.to_h
 			end
 
+			# Returns a safely quoted version of the column name
+			def quote_column name
+
+				# Check to see if our column is a prefix
+				table, col = name.split ".", 2
+
+				if col.nil?
+					field = ActiveRecord::Base.connection.quote_column_name name
+				else
+					field = ActiveRecord::Base.connection.quote_table_name table
+					field += "."
+					field += ActiveRecord::Base.connection.quote_column_name col
+				end
+
+				field
+
+			end
+
 		end
 
 		class Config
@@ -109,7 +127,7 @@ module ActiveRecord
 		end
 
 	end
-	
+
 	# Set up defaults
 	Querify.headers ||= {}
 	Querify.params ||= {}
