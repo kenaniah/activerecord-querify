@@ -17,6 +17,9 @@ require 'activerecord/querify/filterable'
 # Hash filters module
 require 'activerecord/querify/filter'
 
+# Expressions module
+require 'activerecord/querify/expression'
+
 # Rails integration
 require 'activerecord/querify/middleware'
 require 'activerecord/querify/railtie' if defined? ::Rails::Railtie
