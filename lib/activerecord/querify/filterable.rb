@@ -39,7 +39,9 @@ module ActiveRecord
 
 								# Ensure we're not running HAVING on an ungrouped query
 								unless defined?(self.group_values) && !self.group_values.empty?
-									raise Querify::QueryNotYetGrouped, "You must provide a GROUP BY clause in order to filter via HAVING" if filter_type == :having
+									if filter_type == :having
+										raise Querify::QueryNotYetGrouped, "You must provide a GROUP BY clause in order to filter via HAVING"
+									end
 								end
 
 								# Perform column security

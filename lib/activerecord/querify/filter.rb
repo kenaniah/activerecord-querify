@@ -54,11 +54,11 @@ module ActiveRecord
 			end
 
 			def column= col
-				@column = col.to_s
+				@column = col
 			end
 
 			def column
-				@column
+				@column.to_s
 			end
 
 			# Returns a safely quoted version of the column
@@ -88,7 +88,7 @@ module ActiveRecord
 
 			# Returns the filter as a hash
 			def to_hash use_raw_value = true
-				{@column => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
+				{@column.to_s => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
 			end
 
 			# Returns filter as an escaped query string param
