@@ -26,7 +26,7 @@ describe ActiveRecord::Querify do
 			end
 
 			@expr = ActiveRecord::Querify::Expression.new :popularity do |*args|
-				[@statement]
+				@statement
 			end
 
 			@popular = ActiveRecord::Querify::Filter.new @expr, :eq, 'Popular', :string
@@ -37,6 +37,7 @@ describe ActiveRecord::Querify do
 		end
 
 		it 'should filter properly' do
+			puts Post.where(*@popular.to_a).to_sql
 			skip
 		end
 

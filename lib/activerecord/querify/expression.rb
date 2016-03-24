@@ -1,5 +1,5 @@
 module ActiveRecord
-	
+
 	module Querify
 
 		class Expression
@@ -23,7 +23,15 @@ module ActiveRecord
 
 			# Returns the expression text and any bound values
 			def to_a
-				@block.call *@params
+
+				res = @block.call *@params
+
+				# Convert to an array if string
+				return [res] if res.class = String
+
+				# Return the array
+				return res
+
 			end
 
 			# Returns the expression's text
