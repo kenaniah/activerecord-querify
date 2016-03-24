@@ -6,7 +6,7 @@ describe ActiveRecord::Querify do
 		truncate_db
 	end
 
-	describe 'Expressions used in filters' do
+	describe 'Expressions' do
 
 		before do
 
@@ -32,15 +32,22 @@ describe ActiveRecord::Querify do
 			@popular = ActiveRecord::Querify::Filter.new @expr, :eq, 'Popular', :string
 			@not_popular = ActiveRecord::Querify::Filter.new @expr, :eq, 'Not Popular', :string
 
+			@sort = ActiveRecord::Querify::Sort.new @expr, :asc
+
 		end
 
 		it 'should filter properly' do
 			skip
 		end
 
-		it 'should assume the expression is always quoted' do
+		it 'should assume the expression is always quoted in filters' do
 			assert_equal @popular.column, @statement
 			assert_equal @popular.column, @popular.quoted_column
+		end
+
+		it 'should assume the expression is always quoted when sorting' do
+			assert_equal @sort.column, @statement
+			assert_equal @sort.column, @sort.quoted_column
 		end
 
 		it 'should generate a proper query string representation' do

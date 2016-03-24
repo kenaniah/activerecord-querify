@@ -43,11 +43,11 @@ module ActiveRecord
 			end
 
 			def column= col
-				@column = col.to_s
+				@column = col
 			end
 
 			def column
-				@column
+				@column.to_s
 			end
 
 			# Returns a safely quoted version of the column
@@ -57,7 +57,7 @@ module ActiveRecord
 
 			# Returns the filter as a hash
 			def to_hash
-				{@column => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
+				{@column.to_s => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
 			end
 
 			# Returns filter as an escaped query string param
