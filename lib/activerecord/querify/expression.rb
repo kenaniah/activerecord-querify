@@ -27,7 +27,7 @@ module ActiveRecord
 				res = @block.call *@params
 
 				# Convert to an array if string
-				return [res] if res.class = String
+				return [res] if res.class == String
 
 				# Return the array
 				return res

@@ -103,10 +103,14 @@ module ActiveRecord
 
 			# Returns the SQL and parameter needed to populate a WHERE clause
 			def to_a
+
+				# Inject bound parameters if column is an expression
+				args = @column.params rescue []
+
 				if self.type == :column
-					return ["#{quoted_column} #{@operator} #{placeholder}"]
+					return ["#{quoted_column} #{@operator} #{placeholder}", *args]
 				end
-				["#{quoted_column} #{@operator} #{placeholder}", value]
+				["#{quoted_column} #{@operator} #{placeholder}", *args, value]
 			end
 
 		protected

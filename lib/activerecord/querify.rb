@@ -64,7 +64,7 @@ module ActiveRecord
 			def quote_column name
 
 				# Always treat expressions as quoted
-				if name.class == Querify::Expression
+				if name.is_a?(Querify::Expression)
 					return name.to_s
 				end
 
