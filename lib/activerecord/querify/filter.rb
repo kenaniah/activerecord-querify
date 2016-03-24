@@ -88,7 +88,18 @@ module ActiveRecord
 
 			# Returns the filter as a hash
 			def to_hash use_raw_value = true
-				{@column.to_s => {":#{INVERTED_OPERATORS[@operator].to_s}" => use_raw_value ? raw_value : value}}
+				
+				struct = [":#{INVERTED_OPERATORS[@operator].to_s}"]
+				if @column.is_a? Querify::Expression
+					struct = [*@column.params, *struct]
+					struct.unshift ":#{@column.name.to_s}"
+				else
+					struct.unshift @column.to_s
+				end
+
+				# Convert the array to a nested hash
+				struct.reverse.inject(use_raw_value ? raw_value : value) { |a, n| { n => a } }
+
 			end
 
 			# Returns filter as an escaped query string param

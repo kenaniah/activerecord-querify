@@ -54,7 +54,9 @@ describe ActiveRecord::Querify do
 			end
 
 			it 'should generate a proper query string representation' do
-				skip
+
+				assert_equal "where[:popularity][:eq]=Popular", @popular.to_s
+
 			end
 
 		end
@@ -120,7 +122,13 @@ describe ActiveRecord::Querify do
 			end
 
 			it 'should generate a proper query string representation' do
-				skip
+
+				@expr.using 2, "Foo", "Bar"
+				assert_equal "where[:popularity][2][Foo][Bar][:eq]=Popular", @popular.to_s
+
+				@expr.using 3, "Popular", "Not Popular"
+				assert_equal "where[:popularity][3][Popular][Not+Popular][:eq]=Popular", @popular.to_s
+
 			end
 
 		end
