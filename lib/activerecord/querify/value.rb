@@ -3,7 +3,7 @@ module ActiveRecord
 
 		class Value
 
-			attr_accessor :value, :type, :operator, :expression
+			attr_accessor :value, :type, :operator
 
 			TYPES = [
 				:string,
@@ -47,17 +47,9 @@ module ActiveRecord
 
 			def type= type
 
-				# Allow expressions to be set explicitly
-				if type.is_a?(Querify::Expression)
-					@expression = type
-					@type = :expr
-					return @type
-				end
-
 				# Sanity check
 				raise Querify::InvalidColumnType, ":#{type} is not a known column type" unless TYPES.include? type.to_sym
 				@type = type.to_sym
-
 			end
 
 			# Returns the proper value, given the operator
@@ -76,9 +68,6 @@ module ActiveRecord
 
 				# Cast the value based on type
 				return case @type
-				when :expr
-					# Return an expression
-					@expression.to_s
 				when :string, :text
 					# Return a string
 					apply(val, :to_s)
