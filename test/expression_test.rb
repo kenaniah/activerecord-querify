@@ -5,7 +5,10 @@ describe ActiveRecord::Querify::Expression do
 	# Before is also inherited by child describe blocks
 	before do
 		truncate_db
+
+		# TODO: This needs to have a block passed in. I am unsure what it should look like.
 		@@expression = ActiveRecord::Querify::Expression.new("NewExpression", {id:5,foo:"bar"})
+
 	end
 
 	describe 'Filter class unit tests' do
@@ -14,24 +17,24 @@ describe ActiveRecord::Querify::Expression do
 		end
 
 		it 'has a name getter' do
-			skip
+			assert_equal "NewExpression", @@expression.name
 		end
 
 		it 'has a params getter' do
-			skip
+			skip "Annoying string problem"
+			# assert_equal {id:5,foo:"bar"}, @@expression.params
 		end
 
 		it 'has a block getter' do
-			skip
+			skip "Need a block"
 		end
 
-
 		it 'can be initialized without params' do
-			skip
+			another_expression = ActiveRecord::Querify::Expression.new("NewExpression")
 		end
 
 		it 'can be initialized without a block' do
-			skip
+			another_expression = ActiveRecord::Querify::Expression.new("NewExpression", {id:5,foo:"bar"})
 		end
 
 		it 'returns itself with the #using method' do
