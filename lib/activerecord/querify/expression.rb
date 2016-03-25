@@ -8,12 +8,16 @@ module ActiveRecord
 			attr_reader :params
 			attr_reader :block
 
-			def initialize name, params = nil, &block
+			def initialize name = nil, params = nil, &block
 
-				@name = name
+				self.name = name
 				@block = block
 				@params = params unless params.nil?
 
+			end
+
+			def name= val
+				@name = val.to_sym rescue nil
 			end
 
 			def using *params

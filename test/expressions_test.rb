@@ -59,6 +59,43 @@ describe ActiveRecord::Querify do
 
 			end
 
+			describe 'in #filterable' do
+
+				before do
+					@hash = {
+						pop: @expr
+					}
+				end
+
+
+				it 'should accept an optional list of expressions' do
+
+					Post.filterable!
+					Post.filterable! expressions: {}
+					Post.filterable! expressions: @hash
+
+					assert_raises ArgumentError do
+						h = {
+							foo: "not an expression instance"
+						}
+						Post.filterable! expressions: h
+					end
+
+				end
+
+				it 'should reset the expression\'s name to it\'s key name' do
+
+					# Ensure before name
+					assert_equal :popularity, @expr.name
+
+					# Ensure after name
+					Post.filterable! expressions: @hash
+					assert_equal :pop, @expr.name
+
+				end
+
+			end
+
 		end
 
 		describe 'with arguments' do
