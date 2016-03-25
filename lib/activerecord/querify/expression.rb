@@ -4,16 +4,25 @@ module ActiveRecord
 
 		class Expression
 
+			attr_reader :type
 			attr_reader :name
 			attr_reader :params
 			attr_reader :block
 
-			def initialize name = nil, params = nil, &block
+			def initialize type, name = nil, params = nil, &block
 
+				self.type = type
 				self.name = name
 				@block = block
 				@params = params unless params.nil?
 
+			end
+
+			def type= val
+				@type = val.to_sym
+				unless Querify::Value::TYPES.include? @type
+					raise ArgumentError, "Expression's was not passed a valid database type"
+				end
 			end
 
 			def name= val
@@ -41,21 +50,6 @@ module ActiveRecord
 			# Returns the expression's text
 			def to_s
 				self.to_a[0]
-			end
-
-		end
-
-		class Expression
-
-			Sum = Expression.new :sum do |*args|
-				["SUM(?)", args.map(&:to_f)]
-			end
-			Average = Expression.new :average do |*args|
-				["AVERAGE(?)", args.map(&:to_f)]
-			end
-			Count = Expression.new :count do |*args|
-				args = ['*'] unless args.count > 0
-				["COUNT(?)", args]
 			end
 
 		end

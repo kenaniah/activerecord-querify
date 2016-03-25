@@ -27,7 +27,7 @@ describe ActiveRecord::Querify do
 					FactoryGirl.create :comment, post: @post3
 				end
 
-				@expr = ActiveRecord::Querify::Expression.new :popularity do |*args|
+				@expr = ActiveRecord::Querify::Expression.new :string, :popularity do |*args|
 					@statement
 				end
 
@@ -118,7 +118,7 @@ describe ActiveRecord::Querify do
 					FactoryGirl.create :comment, post: @post3
 				end
 
-				@expr = ActiveRecord::Querify::Expression.new :popularity do |*args|
+				@expr = ActiveRecord::Querify::Expression.new :string, :popularity do |*args|
 					[@statement, args[0].to_i, args[1].to_s, args[2].to_s]
 				end
 
