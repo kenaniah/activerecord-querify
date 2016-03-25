@@ -29,7 +29,7 @@ module ActiveRecord
 				if DIRECTIONS.values.include? dir.to_s.upcase
 					@direction = dir.to_s.upcase
 				else
-					@direction = DIRECTIONS[symbolize dir]
+					@direction = DIRECTIONS[dir.to_sym]
 				end
 
 				raise(InvalidDirection, "'#{dir}' is not a valid direction") unless @direction

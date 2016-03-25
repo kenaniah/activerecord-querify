@@ -53,7 +53,7 @@ module ActiveRecord
 			def flatten_hash(hash)
 				hash.flat_map do |key, value|
 					if value.is_a?(Hash)
-						recursive_flatten(value).map { |ks, v| [[key] + ks, v] }
+						flatten_hash(value).map { |ks, v| [[key] + ks, v] }
 					else
 						[[[key], value]]
 					end
