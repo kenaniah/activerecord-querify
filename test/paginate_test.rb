@@ -30,7 +30,7 @@ describe ActiveRecord::Querify::Paginate do
 
 		it 'ActiveRecord knows if the query is paginated' do
 
-			assert Post.paginate.paginated?
+			assert_equal true, Post.paginate.paginated?
 			assert_equal false, Post.paginated?
 
 		end

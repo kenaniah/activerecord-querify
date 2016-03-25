@@ -53,7 +53,7 @@ module ActiveRecord
 								if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
 									column = self.table_name + "." + column
 								end
-
+								
 								# Filter the query
 								filter = Querify::Filter.new column, operator, value, Querify.columns[column]
 								query = query.send filter_type, *filter.to_a
