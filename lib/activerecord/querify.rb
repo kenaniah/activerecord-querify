@@ -17,6 +17,9 @@ require 'activerecord/querify/filterable'
 # Hash filters module
 require 'activerecord/querify/filter'
 
+# Expressions module
+require 'activerecord/querify/expression'
+
 # Rails integration
 require 'activerecord/querify/middleware'
 require 'activerecord/querify/railtie' if defined? ::Rails::Railtie
@@ -60,8 +63,13 @@ module ActiveRecord
 			# Returns a safely quoted version of the column name
 			def quote_column name
 
+				# Always treat expressions as quoted
+				if name.is_a?(Querify::Expression)
+					return name.to_s
+				end
+
 				# Check to see if our column is a prefix
-				table, col = name.split ".", 2
+				table, col = name.to_s.split ".", 2
 
 				if col.nil?
 					field = ActiveRecord::Base.connection.quote_column_name name
