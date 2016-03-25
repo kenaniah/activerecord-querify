@@ -192,7 +192,7 @@ describe ActiveRecord::Querify do
 
 				FactoryGirl.create(:comment, post: Post.last, author: Author.first)
 
-				ActiveRecord::Querify.params = {where:{":comments.id"=>{"neq"=>1}}}
+				ActiveRecord::Querify.params = {where:{"comments.id"=>{"neq"=>1}}}
 				p = Post.joins(:comments).filterable
 				assert_equal 3, p.length
 			end
