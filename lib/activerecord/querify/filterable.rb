@@ -38,22 +38,39 @@ module ActiveRecord
 				# Skip anything that's not :where or :having
 				next unless [:where, :having].include? filter_type
 
+				# Ensure string
+				field = field.to_s
+
 				begin
 
 					# Determine if a column or an expression
 					if field[0] == ":"
 
 						# The field represents an expression
-						puts "Expression #{field} detected!"
+
+						# Chomp the first character
+						field.slice! 0
+						field = field.to_sym
 
 						# Check to see if the expression exists
-						# Parse nested arguments
-						# Filter the query with it
+						unless expressions.has_key? field
+							raise Querify::InvalidFilterColumn.new(field), "':#{field}' is not a registered filterable expression"
+						end
+
+						# Configure the expression
+						expr = expressions[field]
+						expr.using *args
+
+						# Filter the query
+						filter = Querify::Filter.new expr, operator, value, expr.type
+						query = query.send filter_type, *filter.to_a
+
+						# Store the filter
+						Querify.send(filter_type.to_s + "_filters") << filter
 
 					else
 
 						# The field represents a column
-						column = field.to_s
 
 						# Ensure we're not running HAVING on an ungrouped query
 						unless defined?(self.group_values) && !self.group_values.empty?
@@ -63,17 +80,17 @@ module ActiveRecord
 						end
 
 						# Perform column security
-						unless Querify.columns.include?(column)
-							raise Querify::InvalidFilterColumn.new(column), "'#{column}' is not a filterable column"
+						unless Querify.columns.include?(field)
+							raise Querify::InvalidFilterColumn.new(field), "'#{field}' is not a filterable column"
 						end
 
 						# Prefix simple column names when joins are present
-						if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
-							column = self.table_name + "." + column
+						if defined?(self.joins_values) && !self.joins_values.empty? && !field.include?(".")
+							field = self.table_name + "." + field
 						end
 
 						# Filter the query
-						filter = Querify::Filter.new column, operator, value, Querify.columns[column]
+						filter = Querify::Filter.new field, operator, value, Querify.columns[field]
 						query = query.send filter_type, *filter.to_a
 
 						# Store the filter
