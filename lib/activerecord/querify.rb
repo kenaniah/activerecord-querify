@@ -53,11 +53,17 @@ module ActiveRecord
 			def flatten_hash(hash)
 				hash.flat_map do |key, value|
 					if value.is_a?(Hash)
-						recursive_flatten(value).map { |ks, v| [[key] + ks, v] }
+						flatten_hash(value).map { |ks, v| [[key] + ks, v] }
 					else
 						[[[key], value]]
 					end
 				end.to_h
+			end
+
+			def flatten_params hash = self.flatten_hash(self.params)
+				self.flatten_hash(hash).map do |item|
+					item.flatten
+				end
 			end
 
 			# Returns a safely quoted version of the column name

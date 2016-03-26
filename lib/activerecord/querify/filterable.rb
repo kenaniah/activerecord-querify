@@ -33,61 +33,56 @@ module ActiveRecord
 			end
 
 			# Filter the query based on :where & :having from query string
-			[:where, :having].each do |filter_type|
+			Querify.flatten_params.each do |filter_type, field, *args, operator, value|
 
-				if Querify.params[filter_type]
+				# Skip anything that's not :where or :having
+				next unless [:where, :having].include? filter_type
 
-					Querify.params[filter_type].each do |field, filters|
+				begin
 
-						filters.each do |operator, value|
+					# Determine if a column or an expression
+					if field[0] == ":"
 
-							begin
+						# The field represents an expression
+						puts "Expression #{field} detected!"
 
-								# Determine if a column or an expression
-								if field[0] == ":"
+						# Check to see if the expression exists
+						# Parse nested arguments
+						# Filter the query with it
 
-									# The field represents an expression
-									puts "Expression #{field} detected!"
+					else
 
-								else
+						# The field represents a column
+						column = field.to_s
 
-									# The field represents a column
-									column = field.to_s
-
-									# Ensure we're not running HAVING on an ungrouped query
-									unless defined?(self.group_values) && !self.group_values.empty?
-										if filter_type == :having
-											raise Querify::QueryNotYetGrouped, "You must provide a GROUP BY clause in order to filter via HAVING"
-										end
-									end
-
-									# Perform column security
-									unless Querify.columns.include?(column)
-										raise Querify::InvalidFilterColumn.new(column), "'#{column}' is not a filterable column"
-									end
-
-									# Prefix simple column names when joins are present
-									if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
-										column = self.table_name + "." + column
-									end
-
-									# Filter the query
-									filter = Querify::Filter.new column, operator, value, Querify.columns[column]
-									query = query.send filter_type, *filter.to_a
-
-									# Store the filter
-									Querify.send(filter_type.to_s + "_filters") << filter
-
-								end
-
-							rescue Querify::Error => err
-								raise err if throw_errors
+						# Ensure we're not running HAVING on an ungrouped query
+						unless defined?(self.group_values) && !self.group_values.empty?
+							if filter_type == :having
+								raise Querify::QueryNotYetGrouped, "You must provide a GROUP BY clause in order to filter via HAVING"
 							end
-
 						end
+
+						# Perform column security
+						unless Querify.columns.include?(column)
+							raise Querify::InvalidFilterColumn.new(column), "'#{column}' is not a filterable column"
+						end
+
+						# Prefix simple column names when joins are present
+						if defined?(self.joins_values) && !self.joins_values.empty? && !column.include?(".")
+							column = self.table_name + "." + column
+						end
+
+						# Filter the query
+						filter = Querify::Filter.new column, operator, value, Querify.columns[column]
+						query = query.send filter_type, *filter.to_a
+
+						# Store the filter
+						Querify.send(filter_type.to_s + "_filters") << filter
 
 					end
 
+				rescue Querify::Error => err
+					raise err if throw_errors
 				end
 
 			end
