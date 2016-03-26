@@ -37,7 +37,7 @@ module ActiveRecord
 			# Returns the expression text and any bound values
 			def to_a
 
-				res = @block.call *@params
+				res = @block.call(*@params)
 
 				# Convert to an array if string
 				return [res] if res.class == String

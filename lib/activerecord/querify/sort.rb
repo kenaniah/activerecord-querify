@@ -57,7 +57,7 @@ module ActiveRecord
 
 			# Returns the filter as a hash
 			def to_hash
-				{@column.to_s => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
+				{@column.to_s => ":#{INVERTED_DIRECTIONS[@direction]}"}
 			end
 
 			# Returns filter as an escaped query string param

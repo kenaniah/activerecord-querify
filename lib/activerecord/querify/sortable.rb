@@ -22,9 +22,6 @@ module ActiveRecord
 				# Prepare the list of allowed columns
 				Querify.columns = determine_columns columns: columns, only: only
 
-				# Keep a list of invalid columns
-				invalid_columns = []
-
 				# Sort the query based on :sort from query string
 				if Querify.params[:sort]
 

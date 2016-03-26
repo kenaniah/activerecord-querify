@@ -89,10 +89,10 @@ module ActiveRecord
 			# Returns the filter as a hash
 			def to_hash use_raw_value = true
 
-				struct = [":#{INVERTED_OPERATORS[@operator].to_s}"]
+				struct = [":#{INVERTED_OPERATORS[@operator]}"]
 				if @column.is_a? Querify::Expression
 					struct = [*@column.params, *struct]
-					struct.unshift ":#{@column.name.to_s}"
+					struct.unshift ":#{@column.name}"
 				else
 					struct.unshift @column.to_s
 				end

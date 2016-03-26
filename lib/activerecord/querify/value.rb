@@ -64,7 +64,7 @@ module ActiveRecord
 				val = val.split(',') if ['IN', 'NOT IN'].include?(@operator) && !val.is_a?(Array)
 
 				# Return a search string
-				return "%#{val.to_s}%" if ['LIKE', 'ILIKE'].include? @operator
+				return "%#{val}%" if ['LIKE', 'ILIKE'].include? @operator
 
 				# Cast the value based on type
 				return case @type

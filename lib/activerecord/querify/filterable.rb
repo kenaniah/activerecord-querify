@@ -59,7 +59,7 @@ module ActiveRecord
 
 						# Configure the expression
 						expr = expressions[field]
-						expr.using *args
+						expr.using(*args)
 
 						# Filter the query
 						filter = Querify::Filter.new expr, operator, value, expr.type
