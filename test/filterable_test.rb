@@ -194,10 +194,6 @@ describe ActiveRecord::Querify do
 					ActiveRecord::Querify.params = {where: {"name"=>{"eq"=>"B. Second post"}}}
 					assert_equal 1, Post.filterable!.count
 
-					ActiveRecord::Querify.params = {where:{"comments.id"=>{"neq"=>1}}}
-					p = Post.joins(:comments).filterable
-					assert_equal 3, p.length
-
 				end
 
 				it 'returns not equal to' do
@@ -321,5 +317,5 @@ describe ActiveRecord::Querify do
 		end
 
 	end
-	
+
 end
