@@ -45,8 +45,9 @@ module ActiveRecord
 
 
 				# Also set pagination counted headers when requested
-				if ["1", "yes", "true", "on"].include? Querify.params[:page_total_stats]
-					total = self.count
+				if ["1", "yes", "true", "on"].include? Querify.params[:page_total_stats].to_s
+					total = self.count :all
+					total = total.count if total.is_a?(Hash) # AR#count returns a hash when grouped
 					Querify.headers['X-Total-Pages'] = (total.to_f / per_page).ceil.to_s
 					Querify.headers['X-Total-Results'] = total.to_s
 				end

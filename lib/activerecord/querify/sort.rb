@@ -29,7 +29,7 @@ module ActiveRecord
 				if DIRECTIONS.values.include? dir.to_s.upcase
 					@direction = dir.to_s.upcase
 				else
-					@direction = DIRECTIONS[symbolize dir]
+					@direction = DIRECTIONS[Querify.symbolize dir]
 				end
 
 				raise(InvalidDirection, "'#{dir}' is not a valid direction") unless @direction
@@ -43,34 +43,21 @@ module ActiveRecord
 			end
 
 			def column= col
-				@column = col.to_s
+				@column = col
 			end
 
 			def column
-				@column
+				@column.to_s
 			end
 
 			# Returns a safely quoted version of the column
 			def quoted_column
-
-				# Check to see if our column is a prefix
-				table, col = @column.split ".", 2
-
-				if col.nil?
-					field = ActiveRecord::Base.connection.quote_column_name @column
-				else
-					field = ActiveRecord::Base.connection.quote_table_name table
-					field += "."
-					field += ActiveRecord::Base.connection.quote_column_name col
-				end
-
-				field
-
+				Querify.quote_column @column
 			end
 
 			# Returns the filter as a hash
 			def to_hash
-				{@column => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
+				{@column.to_s => ":#{INVERTED_DIRECTIONS[@direction].to_s}"}
 			end
 
 			# Returns filter as an escaped query string param
@@ -86,13 +73,6 @@ module ActiveRecord
 			# Returns the SQL needed to populate an ORDER BY clause
 			def to_sql
 				"#{quoted_column} #{@direction}"
-			end
-
-		protected
-
-			def symbolize val
-				return val if val.is_a? Symbol
-				val[1..-1].to_sym
 			end
 
 		end

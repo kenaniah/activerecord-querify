@@ -3,6 +3,9 @@ require 'active_support/concern'
 # General classes
 require 'activerecord/querify/value'
 
+# Selecting module
+require 'activerecord/querify/selectable'
+
 # Pagination module
 require 'activerecord/querify/exceptions'
 require 'activerecord/querify/paginate'
@@ -17,8 +20,8 @@ require 'activerecord/querify/filterable'
 # Hash filters module
 require 'activerecord/querify/filter'
 
-# select module
-require 'activerecord/querify/selectable'
+# Expressions module
+require 'activerecord/querify/expression'
 
 # Rails integration
 require 'activerecord/querify/middleware'
@@ -53,11 +56,45 @@ module ActiveRecord
 			def flatten_hash(hash)
 				hash.flat_map do |key, value|
 					if value.is_a?(Hash)
-						recursive_flatten(value).map { |ks, v| [[key] + ks, v] }
+						flatten_hash(value).map { |ks, v| [[key] + ks, v] }
 					else
 						[[[key], value]]
 					end
 				end.to_h
+			end
+
+			def flatten_params hash = self.flatten_hash(self.params)
+				self.flatten_hash(hash).map do |item|
+					item.flatten
+				end
+			end
+
+			def symbolize val
+				return val if val.is_a? Symbol
+				val.sub(/^:/, '').to_sym
+			end
+
+			# Returns a safely quoted version of the column name
+			def quote_column name
+
+				# Always treat expressions as quoted
+				if name.is_a?(Querify::Expression)
+					return name.to_s
+				end
+
+				# Check to see if our column is a prefix
+				table, col = name.to_s.split ".", 2
+
+				if col.nil?
+					field = ActiveRecord::Base.connection.quote_column_name name
+				else
+					field = ActiveRecord::Base.connection.quote_table_name table
+					field += "."
+					field += ActiveRecord::Base.connection.quote_column_name col
+				end
+
+				field
+
 			end
 
 		end
