@@ -66,6 +66,11 @@ module ActiveRecord
 				end
 			end
 
+			def symbolize val
+				return val if val.is_a? Symbol
+				val.sub(/^:/, '').to_sym
+			end
+
 			# Returns a safely quoted version of the column name
 			def quote_column name
 

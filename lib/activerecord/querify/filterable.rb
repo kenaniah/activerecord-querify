@@ -39,7 +39,7 @@ module ActiveRecord
 				next unless [:where, :having].include? filter_type
 
 				# Ensure string
-				field = field.to_s
+				field = "#{field}"
 
 				begin
 

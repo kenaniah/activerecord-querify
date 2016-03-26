@@ -96,6 +96,15 @@ describe ActiveRecord::Querify do
 
 				end
 
+				it 'should filter properly' do
+
+					ActiveRecord::Querify::params = {where: {":pop" => {:eq => 'Popular'}}}
+					assert_equal [@post1, @post3], Post.filterable!(expressions: @hash).order(:id)
+
+					ActiveRecord::Querify::params = {where: {":pop" => {:eq => 'Not Popular'}}}
+					assert_equal [@post2], Post.filterable!(expressions: @hash).order(:id)
+				end
+
 			end
 
 		end
@@ -147,6 +156,20 @@ describe ActiveRecord::Querify do
 
 				@expr.using 5, "Popular", "Not Popular"
 				assert_equal [@post1, @post2, @post3], Post.where(*@not_popular.to_a).order(:id)
+
+			end
+
+			it 'should filter with args properly in #filter' do
+
+				hash = {
+					pop: @expr
+				}
+
+				ActiveRecord::Querify::params = {where: {":pop" => {"3" => {"Popular" => {"Not Popular" => {":eq" => 'Popular'}}}}}}
+				assert_equal [@post1], Post.filterable!(expressions: hash).order(:id)
+
+				ActiveRecord::Querify::params = {where: {":pop" => {"5" => {"Yup" => {"Nope" => {":eq" => 'Nope'}}}}}}
+				assert_equal [@post1, @post2, @post3], Post.filterable!(expressions: hash).order(:id)
 
 			end
 
