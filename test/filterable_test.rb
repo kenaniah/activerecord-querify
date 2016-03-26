@@ -314,15 +314,6 @@ describe ActiveRecord::Querify do
 
 			end
 
-			describe 'alias methods' do
-				it "can use #querify in place of #filterable" do
-					skip '#querify returns the same results as a query with #filterable'
-					skip '#querify! throws errors just like #filterable!'
-				end
-
-			end
-
-
 		end
 
 	end
