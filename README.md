@@ -4,21 +4,20 @@
 
 ## Overview
 
-Querify provides an easy interface for manipulating Active Record queries given a hash of parameters. It extends Active Record classes to provide:
+Querify provides an easy interface for manipulating Active Record queries based on a hash of parameters or query string arguments. It extends Active Record classes to provide:
 
-| Active Record Method | Purpose |
-|----------------------|---------|
-| [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination |
-| [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters |
-| `#filterable` | where clauses based on a hash of parameters |
-| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions instead of silently ignoring them |
-| `#filterable!` | like `#filterable`, but throws exceptions instead of silently ignoring them |
+| Active Record Method | Purpose | Manages |
+|----------------------|---------| ------- |
+| [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination | `LIMIT` / `OFFSET` |
+| [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters | `ORDER BY` |
+| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions instead of silently ignoring them | `ORDER BY` |
+| `#filterable` | filtering clauses based on a hash of parameters | `WHERE` / `HAVING` |
+| `#filterable!` | like `#filterable`, but throws exceptions instead of silently ignoring them | `WHERE` / `HAVING` |
 
-Querify was designed to be query string friendly, making pagination, sorting, and filtering based on URL parameters trivial.
 
 ## Getting Started
 
-In **Rails 4**, add this to your Gemfile and run the `bundle install` command:
+In **Rails 4+**, add this to your Gemfile and run the `bundle install` command:
 
 ```ruby
 gem 'activerecord-querify'
@@ -33,8 +32,12 @@ Post.find(params[:post_id]).comments.paginate.sortable.filterable.order(id: :des
 And then manipulate your query via URL params:
 
 ```
-www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][eq]=1&where[created_at][gt]=2+days+ago
+www.example.com/posts?page=2&sort[created_at]=desc&where[author_id][:eq]=1&where[created_at][:gt]=2+days+ago
 ```
+
+## Live Examples
+
+< Link to example rails app goes here >
 
 ## Automatic Pagination
 
@@ -86,7 +89,7 @@ X-Total-Results: 291
 
 As using `:page_total_stats` runs a count query, it is recommended to add it to the first request only.
 
-### Config Options
+### Config Options / Preventing Abuse
 
 To ensure that clients do not abuse the `:per_page` URL param, we provide the following configuration options for pagination:
 
@@ -203,7 +206,7 @@ When using the `#sortable` method, this exception is silently caught, and the of
 
 To force this exception to bubble up, use the `#sortable!` method instead.
 
-## Column Security
+## Column Security / Whitelisting
 
 To ensure that clients do not pass columns that are non-existent or restricted, you can provide a hash of columns & types to whitelist by using the `columns:` hash and enabling the `only:` key.
 
