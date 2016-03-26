@@ -12,6 +12,8 @@ describe ActiveRecord::Querify do
 
 			before do
 
+				ActiveRecord::Querify.params = {}
+
 				@statement = "CASE WHEN posts.comments_count > 2 THEN 'Popular' ELSE 'Not Popular' END"
 
 				# Create posts
@@ -27,7 +29,7 @@ describe ActiveRecord::Querify do
 					FactoryGirl.create :comment, post: @post3
 				end
 
-				@expr = ActiveRecord::Querify::Expression.new :popularity do |*args|
+				@expr = ActiveRecord::Querify::Expression.new :string, :popularity do |*args|
 					@statement
 				end
 
@@ -59,6 +61,52 @@ describe ActiveRecord::Querify do
 
 			end
 
+			describe 'in #filterable' do
+
+				before do
+					@hash = {
+						pop: @expr
+					}
+				end
+
+
+				it 'should accept an optional list of expressions' do
+
+					Post.filterable!
+					Post.filterable! expressions: {}
+					Post.filterable! expressions: @hash
+
+					assert_raises ArgumentError do
+						h = {
+							foo: "not an expression instance"
+						}
+						Post.filterable! expressions: h
+					end
+
+				end
+
+				it 'should reset the expression\'s name to it\'s key name' do
+
+					# Ensure before name
+					assert_equal :popularity, @expr.name
+
+					# Ensure after name
+					Post.filterable! expressions: @hash
+					assert_equal :pop, @expr.name
+
+				end
+
+				it 'should filter properly' do
+
+					ActiveRecord::Querify::params = {where: {":pop" => {:eq => 'Popular'}}}
+					assert_equal [@post1, @post3], Post.filterable!(expressions: @hash).order(:id)
+
+					ActiveRecord::Querify::params = {where: {":pop" => {:eq => 'Not Popular'}}}
+					assert_equal [@post2], Post.filterable!(expressions: @hash).order(:id)
+				end
+
+			end
+
 		end
 
 		describe 'with arguments' do
@@ -81,7 +129,7 @@ describe ActiveRecord::Querify do
 					FactoryGirl.create :comment, post: @post3
 				end
 
-				@expr = ActiveRecord::Querify::Expression.new :popularity do |*args|
+				@expr = ActiveRecord::Querify::Expression.new :string, :popularity do |*args|
 					[@statement, args[0].to_i, args[1].to_s, args[2].to_s]
 				end
 
@@ -108,6 +156,20 @@ describe ActiveRecord::Querify do
 
 				@expr.using 5, "Popular", "Not Popular"
 				assert_equal [@post1, @post2, @post3], Post.where(*@not_popular.to_a).order(:id)
+
+			end
+
+			it 'should filter with args properly in #filter' do
+
+				hash = {
+					pop: @expr
+				}
+
+				ActiveRecord::Querify::params = {where: {":pop" => {"3" => {"Popular" => {"Not Popular" => {":eq" => 'Popular'}}}}}}
+				assert_equal [@post1], Post.filterable!(expressions: hash).order(:id)
+
+				ActiveRecord::Querify::params = {where: {":pop" => {"5" => {"Yup" => {"Nope" => {":eq" => 'Nope'}}}}}}
+				assert_equal [@post1, @post2, @post3], Post.filterable!(expressions: hash).order(:id)
 
 			end
 

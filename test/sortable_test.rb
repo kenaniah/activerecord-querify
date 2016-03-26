@@ -229,13 +229,10 @@ describe ActiveRecord::Querify::Sortable do
 					Post.sortable!
 				end
 
-				ActiveRecord::Querify.params = {sort: {"comments_count" => ":desc"}}
-				assert_raises ActiveRecord::Querify::InvalidDirection do
-					Post.sortable!
-				end
-
 			end
+
 		end
 
 	end
+
 end

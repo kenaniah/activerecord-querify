@@ -60,6 +60,17 @@ module ActiveRecord
 				end.to_h
 			end
 
+			def flatten_params hash = self.flatten_hash(self.params)
+				self.flatten_hash(hash).map do |item|
+					item.flatten
+				end
+			end
+
+			def symbolize val
+				return val if val.is_a? Symbol
+				val.sub(/^:/, '').to_sym
+			end
+
 			# Returns a safely quoted version of the column name
 			def quote_column name
 

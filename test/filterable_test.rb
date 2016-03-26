@@ -192,7 +192,6 @@ describe ActiveRecord::Querify do
 				it 'returns equal to' do
 
 					ActiveRecord::Querify.params = {where: {"name"=>{"eq"=>"B. Second post"}}}
-
 					assert_equal 1, Post.filterable!.count
 
 				end
@@ -326,6 +325,6 @@ describe ActiveRecord::Querify do
 
 		end
 
-
 	end
+
 end

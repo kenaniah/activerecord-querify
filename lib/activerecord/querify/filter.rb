@@ -36,7 +36,7 @@ module ActiveRecord
 				if OPERATORS.values.include? op.to_s
 					@operator = op.to_s
 				else
-					@operator = OPERATORS[op.to_sym]
+					@operator = OPERATORS[Querify.symbolize op]
 				end
 
 				raise(InvalidOperator, "'#{op}' is not a valid operator") unless @operator
@@ -88,7 +88,7 @@ module ActiveRecord
 
 			# Returns the filter as a hash
 			def to_hash use_raw_value = true
-				
+
 				struct = [":#{INVERTED_OPERATORS[@operator].to_s}"]
 				if @column.is_a? Querify::Expression
 					struct = [*@column.params, *struct]
