@@ -21,7 +21,7 @@ module ActiveRecord
 			def type= val
 				@type = val.to_sym
 				unless Querify::Value::TYPES.include? @type
-					raise ArgumentError, "Expression's was not passed a valid database type"
+					raise ArgumentError, "Expression was not passed a valid database type"
 				end
 			end
 
