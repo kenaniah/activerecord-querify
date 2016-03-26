@@ -219,6 +219,6 @@ Post.filterable! columns: {id: :integer, name: :text}, only: true # throws an ex
 
 `only:` causes the function to disallow any columns that aren't explicitly listed in the `columns:` hash.
 
-## Bugs?
+## Bugs? Feature Requests?
 
-If you find a bug please [add an issue on GitHub](https://github.com/kenaniah/activerecord-querify/issues) or fork the project and send a pull request. Feature requests are also welcome.
+If you find a bug or have a feature request, please [add an issue on GitHub](https://github.com/kenaniah/activerecord-querify/issues) or fork the project and send a pull request.
