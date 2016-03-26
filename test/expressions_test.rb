@@ -12,6 +12,8 @@ describe ActiveRecord::Querify do
 
 			before do
 
+				ActiveRecord::Querify.params = {}
+
 				@statement = "CASE WHEN posts.comments_count > 2 THEN 'Popular' ELSE 'Not Popular' END"
 
 				# Create posts
