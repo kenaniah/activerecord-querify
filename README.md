@@ -87,7 +87,7 @@ X-Total-Pages: 15
 X-Total-Results: 291
 ```
 
-As using `?page_total_stats` runs a count query, it is recommended to add it to the first request only.
+Because `?page_total_stats` runs a count query, it is recommended to use it only on the first request.
 
 ### Config Options / Preventing Abuse
 
@@ -117,6 +117,12 @@ Rails.application.config.querify.min_per_page = 5
 Rails.application.config.querify.max_per_page = 50
 ```
 
+And also overridden at call time:
+
+```ruby
+Post.first.paginate(per_page: 25, min_per_page: 5, max_per_page: 50)
+```
+
 ##### `config.per_page`
 
 This option sets the default number of results to be returned in the event that `?per_page` is not specified in the URL
@@ -131,10 +137,10 @@ Determines the maximum number of results that can be requested per page. This op
 
 ### Optionally Bypassing Pagination
 
-Pagination may be disabled for a single request when the following conditions are met:
+Pagination may be bypassed for a single request if allowed by a query's config. Here's how:
 
- * `?per_page=0` is passed in the URL
- * `:max_per_page` option set to `nil` in config or at call time
+ * `?per_page=0` must be passed in the URL
+ * `:max_per_page` option must be set to `nil` in config or at call time
 
 ### Detecting Pagination
 
