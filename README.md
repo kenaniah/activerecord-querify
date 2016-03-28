@@ -26,7 +26,7 @@ gem 'activerecord-querify'
 To make a query automatically paginate, sort, and dynamically filter based on query string parameters, just add all 3 methods to a query:
 
 ```ruby
-Post.find(params[:post_id]).comments.paginate.sortable.filterable.order(id: :desc)
+Post.first.comments.paginate.sortable.filterable.order(id: :desc)
 ```
 
 And then manipulate your query via URL params:
@@ -53,15 +53,15 @@ Post.first.comments.paginate(min_per_page: 1, max_per_page: 10, per_page: 5)
 # the above allows the client to request between 1 - 10 results per page, returning 5 results per page by default
 ```
 
-Querify will then pickup `:page` and `:per_page` from the request's params hash to automatically control which page is returned & the number of results to return.
+Querify will then pickup `?page` and `?per_page` from the request's params hash to automatically control which page is returned & the number of results to return.
 
-To access a particular page of results, pass the `:page` parameter in your URL:
+To access a particular page of results, pass the `?page` parameter in your URL:
 
 ```ruby
 www.example.com/posts?page=5&per_page=10
 ```
 
-If omitted, `:page` is defaulted to 1, and `:per_page` is defaulted to 20.
+If omitted, `?page` is defaulted to 1, and `?per_page` is defaulted to the `:per_page` config option.
 
 ### Pagination Header Metadata
 
@@ -72,7 +72,7 @@ X-Current-Page: 5
 X-Per-Page: 10
 ```
 
-Recordset totals can be requested by additionally passing the `:page_total_stats` param in the URL:
+Recordset totals can be requested by additionally passing the `?page_total_stats` param in the URL:
 
 ```ruby
 www.example.com/posts?page=4&page_total_stats=1
@@ -87,11 +87,11 @@ X-Total-Pages: 15
 X-Total-Results: 291
 ```
 
-As using `:page_total_stats` runs a count query, it is recommended to add it to the first request only.
+As using `?page_total_stats` runs a count query, it is recommended to add it to the first request only.
 
 ### Config Options / Preventing Abuse
 
-To ensure that clients do not abuse the `:per_page` URL param, we provide the following configuration options for pagination:
+To ensure that clients do not abuse the `?per_page` URL param, we provide the following configuration options for pagination:
 
 | Config Option | Default Value | Description |
 |---------------|---------|-------------|
@@ -119,22 +119,22 @@ Rails.application.config.querify.max_per_page = 50
 
 ##### `config.per_page`
 
-This option sets the default number of results to be returned in the event that `:per_page` is not specified in the URL
+This option sets the default number of results to be returned in the event that `?per_page` is not specified in the URL
 
 ##### `config.min_per_page`
 
-It is usually a good idea to constrian the number of results to be returned per page. This option ensures that the `:per_page` param is adjusted to meet this minimum. Setting this to `0` effectively disables the minimum.
+It is usually a good idea to constrian the number of results to be returned per page. This option ensures that the `?per_page` param is adjusted to meet this minimum. Setting this to `0` effectively disables the minimum.
 
 ##### `config.max_per_page`
 
-Determines the maximum number of results that can be requested per page. This option ensures that the `:per_page` param is adjusted to meet this maximum. Setting this to `nil` effectively disables the maximum.
+Determines the maximum number of results that can be requested per page. This option ensures that the `?per_page` param is adjusted to meet this maximum. Setting this to `nil` effectively disables the maximum.
 
-### Disabling Pagination
+### Optionally Bypassing Pagination
 
 Pagination may be disabled for a single request when the following conditions are met:
 
- * `per_page=0` is passed in the URL
- * `:max_per_page` was set to `nil`
+ * `?per_page=0` is passed in the URL
+ * `:max_per_page` option set to `nil` in config or at call time
 
 ### Detecting Pagination
 
@@ -148,7 +148,7 @@ b = Post.all.paginated
 b.paginated? #=> true
 
 c = Post.all.paginate(max_per_page: nil)
-c.paginated? #=> false when :per_page == 0, true otherwise
+c.paginated? #=> false when ?per_page=0, true otherwise
 ```
 
 ## Automatic Sorting
@@ -175,11 +175,9 @@ Sortable expects the parameter hash in the format:
 sort[<column_name>]=<direction>
 ```
 
-**Warning:** We make no guarantee that the columns sorted by are actually columns of the query. You may need to catch invalid statement exceptions when using this method.
+### Available Sort Directions
 
-### Accepted Sort Directions
-
-| Param Value | Sort Direction |
+| Param Value | SQL Direction |
 |-------------|----------|
 | `asc` | ASC |
 | `desc` | DESC |
@@ -190,9 +188,11 @@ sort[<column_name>]=<direction>
 | `:descnf` | DESC NULLS FIRST |
 | `:descnl` | DESC NULLS LAST |
 
+### Possible Sorting Exceptions
+
 #### `ActiveRecord::Querify::InvalidDirection`
 
-When an invalid direction is passed in to a sort param, `ActiveRecord::Querify::InvalidDirection` is thrown.
+When an invalid direction is passed in a sort param, `ActiveRecord::Querify::InvalidDirection` is thrown.
 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
@@ -200,7 +200,7 @@ To force this exception to bubble up, use the `#sortable!` method instead.
 
 #### `ActiveRecord::Querify::InvalidSortColumn`
 
-This exception is thrown when sortable is called with a whitelist and a sort is requested for a column that is not in the whitelist.
+This exception is thrown when a sort is requested for a column that is not part of the query or not part of the whitelist.
 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
