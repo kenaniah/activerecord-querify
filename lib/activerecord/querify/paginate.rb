@@ -80,10 +80,10 @@ module ActiveRecord
 
 				# Override using the params hash if parsable
 				unless Querify.params[:column].nil?
-					filter_column = Date.parse(Querify.params[:column]) rescue filter_column
+					filter_column = Querify.params[:column] rescue filter_column
 				end
 
-				return filter_column.to_sym 
+				return filter_column.to_sym
 
 			end
 

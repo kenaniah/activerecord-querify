@@ -87,56 +87,36 @@ describe ActiveRecord::Querify::Paginate do
 
 			end
 
-			it 'returns record that is within the params of since_date range' do
+			it 'returns only record that is within the params of since_date range' do
 				ActiveRecord::Querify.params = {:since_date => '1991-09-12'}
 
 				p = Post.paginate
 
 				assert_includes(Date.parse('1991-09-12')..Time.now, p.all.sample.created_at)
-			end
-
-			it 'does not return record that is not within the params of since_date range' do
-				ActiveRecord::Querify.params = {:since_date => '1991-09-12'}
-
-				p = Post.paginate
-
 				refute_includes(Date.parse('1900-01-01')..Date.parse('1991-09-11'), p.all.sample.created_at)
 			end
 
-			it 'returns record that is within the params of until_date range' do
+
+			it 'returns only record that is within the params of until_date range' do
 				ActiveRecord::Querify.params = {:until_date => '2015-09-12'}
 
 				p = Post.paginate
 
 				assert_includes(Date.parse("1900-1-1")..Date.parse('2015-09-12'), p.all.sample.created_at)
-			end
-
-			it 'does not return record that is not within the params of until_date range' do
-				ActiveRecord::Querify.params = {:until_date => '2015-09-12'}
-
-				p = Post.paginate
-
 				refute_includes(Date.parse("2015-09-13")..Time.now, p.all.sample.created_at)
 			end
 
-			it 'returns record that is within the params of since_date and until_date' do
+			it 'returns only record that is within the params of since_date and until_date' do
 				ActiveRecord::Querify.params = {:since_date => '1991-09-12', :until_date => '2015-09-12'}
 
 				p = Post.paginate
 
 				assert_includes(Date.parse("1991-09-12")..Date.parse("2015-09-12"), p.all.sample.created_at)
-			end
-
-			it 'does not return record that is within the params of since_date and until_date' do
-				ActiveRecord::Querify.params = {:since_date => '1991-09-12', :until_date => '2015-09-12'}
-
-				p = Post.paginate
-
 				refute_includes(Date.parse("1900-1-1")..Date.parse("1991-09-11"), p.all.sample.created_at)
 				refute_includes(Date.parse("2015-09-12")..Time.now, p.all.sample.created_at)
 			end
 
-			it 'uses default since_date and until_date if no params given' do
+			it 'uses default created_at, since_date and until_date if no params given' do
 				ActiveRecord::Querify.params = {}
 
 				p = Post.paginate
@@ -144,7 +124,35 @@ describe ActiveRecord::Querify::Paginate do
 				assert_includes(Date.parse("1900-1-1")..Time.now, p.all.sample.created_at)
 			end
 
+			it 'returns only record that is within the params of since_date range for updated_at' do
+				ActiveRecord::Querify.params = {:column => "updated_at", :since_date => '1991-09-12'}
 
+				p = Post.paginate
+
+				assert_includes(Date.parse('1991-09-12')..Time.now, p.all.sample.updated_at)
+				refute_includes(Date.parse('1900-01-01')..Date.parse('1991-09-11'), p.all.sample.updated_at)
+			end
+
+			it 'returns only record that is within the params of until_date range for updated_at' do
+				ActiveRecord::Querify.params = {:column => "updated_at", :until_date => '2015-09-12'}
+
+				p = Post.paginate
+
+				assert_includes(Date.parse("1900-1-1")..Date.parse('2015-09-12'), p.all.sample.updated_at)
+				refute_includes(Date.parse("2015-09-13")..Time.now, p.all.sample.updated_at)
+			end
+
+
+			it 'returns only record that is within the params of since_date and until_date for updated_at' do
+				ActiveRecord::Querify.params = {:column => "updated_at", :since_date => '1991-09-12', :until_date => '2015-09-12'}
+
+				p = Post.paginate
+
+				assert_includes(Date.parse("1991-09-12")..Date.parse("2015-09-12"), p.all.sample.updated_at)
+				refute_includes(Date.parse("1900-1-1")..Date.parse("1991-09-11"), p.all.sample.updated_at)
+				refute_includes(Date.parse("2015-09-12")..Time.now, p.all.sample.updated_at)
+
+			end
 
 			it 'uses options[:min_per_page] if given' do
 
