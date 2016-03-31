@@ -30,8 +30,6 @@ module ActiveRecord
 				since_date = determine_since options
 				until_date = determine_until options
 				filter_column = determine_filter_column options
-				# since_date = Date.parse('2016-03-31')
-				# until_date = Date.parse('2016-04-04')
 
 				current_page = determine_current_page options
 				per_page = determine_per_page options
@@ -73,6 +71,7 @@ module ActiveRecord
 
 			private
 
+			# Let user choose which column to be filtered
 			def determine_filter_column options
 
 				# Setting a default column
@@ -83,10 +82,12 @@ module ActiveRecord
 					filter_column = Querify.params[:column] rescue filter_column
 				end
 
+				# Return the column in symbol
 				return filter_column.to_sym
 
 			end
 
+			# Let user filter the since_date
 			def determine_since options
 
 				# Setting a default start date
@@ -101,6 +102,7 @@ module ActiveRecord
 				return since_date
 			end
 
+			# Let user filter the until_date
 			def determine_until options
 
 				# Setting a default end date
@@ -165,10 +167,9 @@ module ActiveRecord
 				unless Querify.params[:per_page].nil?
 					per_page = Querify.params[:per_page].to_i rescue per_page
 				end
+
 				# Return it
-
 				return per_page
-
 
 			end
 
