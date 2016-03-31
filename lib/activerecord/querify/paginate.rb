@@ -27,6 +27,11 @@ module ActiveRecord
 				# Determine config options
 				options[:min_per_page] = determine_min options
 				options[:max_per_page] = determine_max options
+				since_date = determine_since options
+				until_date = determine_until options
+				filter_column = determine_filter_column options
+				# since_date = Date.parse('2016-03-31')
+				# until_date = Date.parse('2016-04-04')
 
 				current_page = determine_current_page options
 				per_page = determine_per_page options
@@ -37,6 +42,7 @@ module ActiveRecord
 				# Adjust :per_page to honor the minimum and maximum (when set)
 				per_page = [per_page, options[:max_per_page]].min unless options[:max_per_page].nil?
 				per_page = [per_page, options[:min_per_page]].max
+
 
 				# Set the pagination meta headers to be returned with the HTTP response
 
@@ -53,7 +59,9 @@ module ActiveRecord
 				end
 
 				# Paginate the query
-				paginated = self.limit(per_page).offset(per_page * (current_page - 1))
+				# paginated = self.where("created_at >= ? AND created_at <= ?", since_date, until_date).limit(per_page).offset(per_page * (current_page - 1))
+				paginated = self.where(filter_column => (since_date..until_date)).limit(per_page).offset(per_page * (current_page - 1))
+				# paginated = self.limit(per_page).offset(per_page * (current_page - 1))
 
 				# Mark the paginated query as paginated
 				paginated._querify_paginated = true
@@ -64,6 +72,49 @@ module ActiveRecord
 			end
 
 			private
+
+			def determine_filter_column options
+
+				# Setting a default column
+				filter_column = "created_at"
+
+				# Override using the params hash if parsable
+				unless Querify.params[:column].nil?
+					filter_column = Date.parse(Querify.params[:column]) rescue filter_column
+				end
+
+				return filter_column.to_sym 
+
+			end
+
+			def determine_since options
+
+				# Setting a default start date
+				since_date = Date.parse("1900-1-1")
+
+				# Override using the params hash if parsable
+				unless Querify.params[:since_date].nil?
+					since_date = Date.parse(Querify.params[:since_date]) rescue since_date
+				end
+
+				# Return it
+				return since_date
+			end
+
+			def determine_until options
+
+				# Setting a default end date
+				until_date = Time.now
+
+				# Override using the params hash if parsable
+				unless Querify.params[:until_date].nil?
+					until_date = Date.parse(Querify.params[:until_date]) rescue until_date
+				end
+
+				# Return it
+				return until_date
+			end
+
 
 			# Determines the max per page option (options overrides params)
 			def determine_max options

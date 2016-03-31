@@ -184,7 +184,6 @@ describe ActiveRecord::Querify::Paginate do
 
 				 ActiveRecord::Querify.params = {:page => 2}
 				 b = Post.paginate
-
 				 assert a.length == 3 && a.length == b.length
 				 assert a[0].id < b[0].id && a[1].id < b[1].id
 
