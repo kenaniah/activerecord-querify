@@ -151,7 +151,30 @@ describe ActiveRecord::Querify::Paginate do
 				assert_includes(Date.parse("1991-09-12")..Date.parse("2015-09-12"), p.all.sample.updated_at)
 				refute_includes(Date.parse("1900-1-1")..Date.parse("1991-09-11"), p.all.sample.updated_at)
 				refute_includes(Date.parse("2015-09-12")..Time.now, p.all.sample.updated_at)
+			end
 
+			it 'will return default since_date if params of since_date is invalid' do
+				ActiveRecord::Querify.params = {:since_date => 'foo'}
+
+				p = Post.paginate
+
+				assert_includes(Date.parse("1991-09-12")..Time.now, p.all.sample.created_at)
+			end
+
+			it 'will return default until_date if params of until_date is invalid' do
+				ActiveRecord::Querify.params = {:until_date => 'bar'}
+
+				p = Post.paginate
+
+				assert_includes(Date.parse("1900-1-1")..Time.now, p.all.sample.created_at)
+			end
+
+			it 'will return default created_at if params of column is invalid' do
+				ActiveRecord::Querify.params = {:column => 'jefferson'}
+
+				p = Post.paginate
+
+				assert_includes(Date.parse("1900-1-1")..Time.now, p.all.sample.created_at)
 			end
 
 			it 'uses options[:min_per_page] if given' do
