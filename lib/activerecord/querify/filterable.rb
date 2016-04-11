@@ -38,6 +38,9 @@ module ActiveRecord
 				# Skip anything that's not :where or :having
 				next unless [:where, :having].include? filter_type
 
+				# Skip anything that does not have a value
+				next if value.to_s.strip.blank?
+
 				# Ensure string
 				field = "#{field}"
 

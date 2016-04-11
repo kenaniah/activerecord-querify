@@ -71,6 +71,15 @@ describe ActiveRecord::Querify do
 
 			end
 
+			it 'does not filter on empty values' do
+
+				ActiveRecord::Querify.params = {where: {"id" => {":eq" => ""}}}
+				p = Post.all.filterable
+				assert_equal [], ActiveRecord::Querify.where_filters
+				assert_equal 4, p.length
+
+			end
+
 			it 'ignores errors on column security violations' do
 
 				Post.filterable(columns: {author_id: :integer}, only: true)
