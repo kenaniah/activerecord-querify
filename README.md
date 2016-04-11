@@ -10,9 +10,9 @@ Querify provides an easy interface for manipulating Active Record queries based 
 |----------------------|---------| ------- |
 | [`#paginate`](#automatic-pagination) | automatic and highly configurable pagination | `LIMIT` / `OFFSET` |
 | [`#sortable`](#automatic-sorting) | orders the query based on a hash of parameters | `ORDER BY` |
-| [`#sortable!`](#querifyinvaliddirection) | like `#sortable`, but throws exceptions instead of silently ignoring them | `ORDER BY` |
-| `#filterable` | filtering clauses based on a hash of parameters | `WHERE` / `HAVING` |
-| `#filterable!` | like `#filterable`, but throws exceptions instead of silently ignoring them | `WHERE` / `HAVING` |
+| [`#sortable!`](#automatic-sorting) | like `#sortable`, but throws exceptions instead of silently ignoring them | `ORDER BY` |
+| [`#filterable`](#automatic-filtering) | filtering clauses based on a hash of parameters | `WHERE` / `HAVING` |
+| [`#filterable!`](#automatic-filtering) | like `#filterable`, but throws exceptions instead of silently ignoring them | `WHERE` / `HAVING` |
 
 
 ## Getting Started
@@ -211,6 +211,10 @@ This exception is thrown when a sort is requested for a column that is not part 
 When using the `#sortable` method, this exception is silently caught, and the offending sort param is silently ignored.
 
 To force this exception to bubble up, use the `#sortable!` method instead.
+
+## Automatic Filtering
+
+Querify allows you to filter an Active Record query using both existing columns and SQL column expressions. 
 
 ## Column Security / Whitelisting
 
