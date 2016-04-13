@@ -80,7 +80,7 @@ module ActiveRecord
 				end
 
 				# Check to see if our column is a prefix
-				table, col = name.to_s.split ".", 2
+				table, col = name.to_s.reverse.split(".", 2).map(&:reverse).reverse
 
 				if col.nil?
 					field = ActiveRecord::Base.connection.quote_column_name name
@@ -159,7 +159,7 @@ module ActiveRecord
 					model.columns_hash.each do |name, col|
 						detected_columns["#{model.table_name}.#{name}"] = col.type
 					end
-					
+
 				end
 			end
 
