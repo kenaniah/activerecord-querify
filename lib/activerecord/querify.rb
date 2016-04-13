@@ -132,16 +132,74 @@ module ActiveRecord
 
 			# Detect columns available via joins
 			if defined? self.joins_values
+
+				# Determine the table names
+				tables = []
 				self.joins_values.each do |table|
-					model = table.to_s.classify.constantize
+					if Arel::Nodes::Node === table
+						tables = tables.concat(_resolve_arel_nodes(table))
+					else
+						tables << table.to_s
+					end
+				end
+
+				# Convert tables to columns
+				tables.uniq.each do |table|
+
+					# Find the model
+					model = nil
+					ActiveRecord::Base.descendants.each do |m|
+						if m.table_name == table
+							model = m
+							break
+						end
+					end
+
+					# Add the columns
 					model.columns_hash.each do |name, col|
 						detected_columns["#{model.table_name}.#{name}"] = col.type
 					end
+					
 				end
 			end
 
 			# Return it
 			detected_columns
+
+		end
+
+		# Returns a list of tables from an arel node
+		protected def _resolve_arel_nodes node
+
+			tables = []
+
+			# Solve attribute nodes
+			if Arel::Attributes::Attribute === node
+				tables << node.relation.name
+			end
+
+			# Solve table nodes
+			if Arel::Table === node
+				tables << node.name
+			end
+
+			# Solve expression nodes
+			if node.respond_to? :expr
+				tables = tables.concat(_resolve_arel_nodes(node.expr))
+			end
+
+			# Solve left
+			if node.respond_to? :left
+				tables = tables.concat(_resolve_arel_nodes(node.left))
+			end
+
+			# Solve right
+			if node.respond_to? :right
+				tables = tables.concat(_resolve_arel_nodes(node.right))
+			end
+
+			# Return any tables found
+			return tables
 
 		end
 
