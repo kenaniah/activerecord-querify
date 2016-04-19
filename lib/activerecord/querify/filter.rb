@@ -15,6 +15,7 @@ module ActiveRecord
 				neq: '!=',
 				is: 'IS',
 				isnot: 'IS NOT',
+				contains: '@>',
 				like: 'LIKE',
 				ilike: 'ILIKE',
 				in: 'IN',
@@ -130,6 +131,8 @@ module ActiveRecord
 			def placeholder
 				if ['IN', 'NOT IN'].include? @operator
 					'(?)'
+				elsif ['@>', '<@'].include? @operator # add better support for arrays
+					'ARRAY[?]'
 				elsif self.type == :column
 					value
 				else

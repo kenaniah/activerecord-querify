@@ -17,6 +17,8 @@ module ActiveRecord
 				:timestamp, # added for convenience
 				:binary,
 				:boolean,
+				:json,
+				:jsonb,
 				:column # Represents another column in the query
 			].freeze
 
