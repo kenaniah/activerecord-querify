@@ -3,6 +3,9 @@ require 'active_support/concern'
 # General classes
 require 'activerecord/querify/value'
 
+# Selecting module
+require 'activerecord/querify/selectable'
+
 # Pagination module
 require 'activerecord/querify/exceptions'
 require 'activerecord/querify/paginate'

@@ -27,5 +27,11 @@ module ActiveRecord
 		# Thrown when an unrecognized type is passed for a column
 		class InvalidColumnType < Error; end
 
+		# Raise not specified params error
+		class ParameterNotGiven < Error; end
+
+		# Thrown when column does not exist
+		class InvalidColumn < Error; end
+
 	end
 end
